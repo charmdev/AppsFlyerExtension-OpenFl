@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<ndll name="appsflyerextension" />
+	
+	<!-- Use the following for an Android Java extension, not needed otherwise -->
+	
+	<dependency name="appsflyerextension" path="dependencies/android" if="android" />
+	<android extension="org.haxe.extension.AppsFlyerExtension" />
+	<template path="dependencies/android/libs/AF-Android-SDK.jar" rename="libs/AF-Android-SDK.jar" if="android"/>
+
+	<section if="ios">
+		<ndll name="appsflyerextension" />
+		<dependency path="dependencies/ios/AppsFlyerLib.framework" />
+		<ios linker-flags="-ObjC" deployment="6.0" />
+	</section>
+
+</project>
