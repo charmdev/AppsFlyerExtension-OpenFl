@@ -1,5 +1,5 @@
 # AppsFlyerExtension-HAXE
-Native extension (iOS, Android) AppsFlyer SDK for HAXE
+Native extension (iOS, Android) AppsFlyer SDK for OpenFl
 
 **Install:**
 1. run `haxelib git AppsFlyerExtension https://github.com/GreenishFlow/AppsFlyerExtension-HAXE`
