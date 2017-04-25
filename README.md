@@ -1,4 +1,4 @@
-# AppsFlyerExtension-HAXE
+# AppsFlyerExtension-OpenFl
 Native extension (iOS, Android) AppsFlyer SDK for OpenFl
 
 **Install:**
