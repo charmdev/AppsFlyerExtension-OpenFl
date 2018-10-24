@@ -1,0 +1,34 @@
+
+buildscript {
+	repositories {
+		google()
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.android.tools.build:gradle:3.2.0'
+	}
+}
+
+apply plugin: 'com.android.library'
+
+android {
+	sourceSets {
+		main {
+			manifest.srcFile 'AndroidManifest.xml'
+			java.srcDirs = ['src']
+			res.srcDirs = ['res']
+			aidl.srcDirs = ['src']
+		}
+	}
+	compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+	buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+}
+
+dependencies {
+    repositories {
+		google()
+	}
+    compile project(':deps:extension-api')
+	implementation 'com.appsflyer:af-android-sdk:4+@aar'
+	implementation 'com.android.installreferrer:installreferrer:1.0'
+}
