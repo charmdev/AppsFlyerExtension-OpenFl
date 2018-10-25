@@ -12,6 +12,7 @@ import android.util.Log;
 import com.appsflyer.AppsFlyerLib;
 import android.app.Application;
 import java.util.*;
+import java.lang.Runnable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,7 +50,11 @@ public class AppsFlyerExtension extends Extension {
 	public static void startTracking (String devKey, String appId) {
 		
 		Log.v("AppsFlyerExtension", "startTracking");
-		AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(),devKey);
+		mainActivity.runOnUiThread(new Runnable() {
+   			public void run() {
+        			AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(),devKey);
+    			}
+		});
 	}
 
 	public static void trackEvent (String eventName, String eventData) {
