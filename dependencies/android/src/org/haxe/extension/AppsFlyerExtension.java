@@ -48,11 +48,11 @@ import org.json.JSONObject;
 public class AppsFlyerExtension extends Extension {
 	
 	public static void startTracking (String devKey, String appId) {
-		
+		final String dKey = devKey;
 		Log.v("AppsFlyerExtension", "startTracking");
 		mainActivity.runOnUiThread(new Runnable() {
    			public void run() {
-        			AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(),devKey);
+        			AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), dKey);
     			}
 		});
 	}
