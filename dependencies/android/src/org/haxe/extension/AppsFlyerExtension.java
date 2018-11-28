@@ -46,20 +46,91 @@ import org.json.JSONObject;
 	back to Haxe from Java.
 */
 public class AppsFlyerExtension extends Extension {
-	
+
+    public static String installConversionData = null;
+    public static int sessionCount = 0;
+    public static HaxeObject callbackObj = null;
+
+    public static void addConversionListenerCallback(HaxeObject callbackObj) {
+
+        AppsFlyerExtension.callbackObj = callbackObj;
+
+        if (GoogleReferrer.installConversionData != null)
+            successCallback(AppsFlyerExtension.installConversionData);
+    }
+
+    private static void successCallback(String response)
+    {
+        if (AppsFlyerExtension.callbackObj != null)
+            AppsFlyerExtension.callbackObj.call1("onSuccess_jni", response);
+    }
+
+    private static void errorCallback(String errMsg)
+    {
+        if (AppsFlyerExtension.callbackObj != null)
+            AppsFlyerExtension.callbackObj.call1("onError_jni", errMsg);
+    }
+
+    public static void setInstallData(Map<String, String> conversionData){
+        if(sessionCount == 0){
+            final String install_type = "Install Type: " + conversionData.get("af_status") + "\n";
+            final String media_source = "Media Source: " + conversionData.get("media_source") + "\n";
+            final String install_time = "Install Time(GMT): " + conversionData.get("install_time") + "\n";
+            final String click_time = "Click Time(GMT): " + conversionData.get("click_time") + "\n";
+            final String is_first_launch = "Is First Launch: " + conversionData.get("is_first_launch") + "\n";
+
+            installConversionData = install_type + media_source + install_time + click_time + is_first_launch;
+            successCallback(installConversionData);
+            sessionCount++;
+        }
+
+    }
+
 	public static void startTracking (String devKey, String appId) {
 		final String dKey = devKey;
-		Log.v("AppsFlyerExtension", "startTracking");
+		Log.v((AppsFlyerLib.LOG_TAG, "startTracking");
+
+        AppsFlyerConversionListener conversionListener = new AppsFlyerConversionListener() {
+            /* Returns the attribution data. Note - the same conversion data is returned every time per install */
+            @Override
+            public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
+                for (String attrName : conversionData.keySet()) {
+                    Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+                }
+                setInstallData(conversionData);
+            }
+
+            @Override
+            public void onInstallConversionFailure(String errorMessage) {
+                Log.d(AppsFlyerLib.LOG_TAG, "error getting conversion data: " + errorMessage);
+                errorCallback("error getting conversion data: " + errorMessage);
+            }
+
+            /* Called only when a Deep Link is opened */
+            @Override
+            public void onAppOpenAttribution(Map<String, String> conversionData) {
+                for (String attrName : conversionData.keySet()) {
+                    Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+                }
+            }
+
+            @Override
+            public void onAttributionFailure(String errorMessage) {
+                Log.d(AppsFlyerLib.LOG_TAG, "error onAttributionFailure : " + errorMessage);
+            }
+        };
+
 		mainActivity.runOnUiThread(new Runnable() {
    			public void run() {
         			AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), dKey);
+                    AppsFlyerLib.getInstance().init(dKey , conversionListener , Extension.mainActivity.getApplication());
     			}
 		});
 	}
 
 	public static void trackEvent (String eventName, String eventData) {
 
-		Log.v("AppsFlyerExtension", "Trying to send. trackEvent: " + eventName + ", data: " + eventData);
+		Log.v((AppsFlyerLib.LOG_TAG, "Trying to send. trackEvent: " + eventName + ", data: " + eventData);
 		Map<String, Object> eventValue = new HashMap<String, Object>();
 		if (eventData != null) {
 			try {
@@ -72,9 +143,9 @@ public class AppsFlyerExtension extends Extension {
 					eventValue.put(key,jObject.get(key));
 				}
 				AppsFlyerLib.getInstance().trackEvent(Extension.mainContext, eventName, eventValue);
-				Log.v("AppsFlyerExtension", "Success!");
+				Log.v((AppsFlyerLib.LOG_TAG, "Success!");
 			} catch (final JSONException e) {
-				Log.e("AppsFlyerExtension", "Json parsing error: " + e.getMessage());
+				Log.e((AppsFlyerLib.LOG_TAG, "Json parsing error: " + e.getMessage());
 			}
 		}
 	}
@@ -97,7 +168,7 @@ public class AppsFlyerExtension extends Extension {
 	 */
 	public void onCreate (Bundle savedInstanceState) {
 
-		//Log.v("AppsFlyerExtension", "onCreate");
+		//Log.v((AppsFlyerLib.LOG_TAG, "onCreate");
 	}
 	
 	

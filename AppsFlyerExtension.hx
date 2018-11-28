@@ -12,7 +12,33 @@ import openfl.utils.JNI;
 
 
 class AppsFlyerExtension {
-	
+
+	#if (cpp || neko)
+		private static var appsflyerextension_startTracking = Lib.load ("appsflyerextension", "appsflyerextension_startTracking", 2);
+		private static var appsflyerextension_trackEvent = Lib.load ("appsflyerextension", "appsflyerextension_trackEvent", 2);
+	#end
+	#if (android && openfl)
+		public vae onSuccess_jni:String -> Void;
+		public var onError_jni:String -> Void;
+		private static var appsflyerextension_addConversionListenerCallback_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "addConversionListenerCallback", "(Lorg/haxe/lime/HaxeObject;)V");
+		private static var appsflyerextension_startTracking_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "startTracking", "(Ljava/lang/String;Ljava/lang/String;)V");
+		private static var appsflyerextension_trackEvent_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "trackEvent", "(Ljava/lang/String;Ljava/lang/String;)V");
+	#end
+
+	private static var instance:AppsFlyerExtension;
+
+	private function new()
+	{}
+
+	public static function getInstance():AppsFlyerExtension
+	{
+		if (instance == null)
+		{
+			instance = new AppsFlyerExtension();
+		}
+
+		return instance;
+	}
 	
 	public static function startTracking (devKey:String, appId:String = ""):Void {
 		
@@ -38,14 +64,15 @@ class AppsFlyerExtension {
 
 	}
 
-	#if (cpp || neko)
-	private static var appsflyerextension_startTracking = Lib.load ("appsflyerextension", "appsflyerextension_startTracking", 2);
-	private static var appsflyerextension_trackEvent = Lib.load ("appsflyerextension", "appsflyerextension_trackEvent", 2);
-	#end
-	#if (android && openfl)
-	private static var appsflyerextension_startTracking_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "startTracking", "(Ljava/lang/String;Ljava/lang/String;)V");
-	private static var appsflyerextension_trackEvent_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "trackEvent", "(Ljava/lang/String;Ljava/lang/String;)V");
-	#end
-	
+	public static function addConversionListenerCallback(onSuccess:String -> Void, onError:String -> Void):Void {
+
+		#if (android && openfl)
+
+		getInstance().onSuccess_jni = onSuccess;
+		getInstance().onError_jni = onError;
+		appsflyerextension_addConversionListenerCallback_jni(getInstance());
+
+		#end
+	}
 	
 }
