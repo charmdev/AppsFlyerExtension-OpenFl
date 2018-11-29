@@ -105,7 +105,20 @@ public class AppsFlyerExtension extends Extension {
 		final String dKey = devKey;
 		Log.v(AppsFlyerLib.LOG_TAG, "startTracking");
 
-        final AppsFlyerConversionListener conversionListener = new AppsFlyerConversionListener() {
+        /*AppsFlyerLib.getInstance().init(
+                dKey ,
+                conversionListener ,
+                Extension.mainContext
+        );*/
+
+        mainActivity.runOnUiThread(new Runnable() {
+            @Override
+   			public void run() {
+                    AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), dKey);
+    			}
+		});
+
+        AppsFlyerLib.getInstance().registerConversionListener(Extension.mainContext, new AppsFlyerConversionListener() {
             /* Returns the attribution data. Note - the same conversion data is returned every time per install */
             @Override
             public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
@@ -133,19 +146,7 @@ public class AppsFlyerExtension extends Extension {
             public void onAttributionFailure(String errorMessage) {
                 Log.d(AppsFlyerLib.LOG_TAG, "error onAttributionFailure : " + errorMessage);
             }
-        };
-
-        mainActivity.runOnUiThread(new Runnable() {
-            @Override
-   			public void run() {
-        			AppsFlyerLib.getInstance().startTracking(Extension.mainContext, dKey);
-                    AppsFlyerLib.getInstance().init(
-                            dKey ,
-                            conversionListener ,
-                            Extension.mainContext)
-                    ;
-    			}
-		});
+        });
 	}
 
 	public static void trackEvent (String eventName, String eventData) {
