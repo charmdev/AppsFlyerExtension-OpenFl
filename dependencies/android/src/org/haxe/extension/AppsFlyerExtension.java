@@ -14,11 +14,14 @@ import com.appsflyer.AppsFlyerConversionListener;
 import android.app.Application;
 import java.util.*;
 import java.lang.Runnable;
+
 import org.haxe.lime.HaxeObject;
+import org.haxe.extension.Extension;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 
 /* 
@@ -132,7 +135,8 @@ public class AppsFlyerExtension extends Extension {
             }
         };
 
-		mainActivity.runOnUiThread(new Runnable() {
+        mainActivity.runOnUiThread(new Runnable() {
+            @Override
    			public void run() {
         			AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), dKey);
                     AppsFlyerLib.getInstance().init(dKey , conversionListener , Extension.mainActivity.getApplication());
