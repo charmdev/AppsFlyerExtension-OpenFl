@@ -138,8 +138,12 @@ public class AppsFlyerExtension extends Extension {
         mainActivity.runOnUiThread(new Runnable() {
             @Override
    			public void run() {
-        			AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), dKey);
-                    AppsFlyerLib.getInstance().init(dKey , conversionListener , Extension.mainActivity.getApplication());
+        			AppsFlyerLib.getInstance().startTracking(Extension.mainContext, dKey);
+                    AppsFlyerLib.getInstance().init(
+                            dKey ,
+                            conversionListener ,
+                            Extension.mainContext)
+                    ;
     			}
 		});
 	}
