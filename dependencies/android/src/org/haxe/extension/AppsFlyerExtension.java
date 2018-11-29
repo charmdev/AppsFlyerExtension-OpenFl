@@ -53,6 +53,7 @@ import org.json.JSONObject;
 public class AppsFlyerExtension extends Extension {
 
     public static String installConversionData = null;
+    public static String conversionError = null;
     public static int sessionCount = 0;
     public static HaxeObject callbackObj = null;
 
@@ -62,6 +63,9 @@ public class AppsFlyerExtension extends Extension {
 
         if (AppsFlyerExtension.installConversionData != null)
             successCallback(AppsFlyerExtension.installConversionData);
+
+        if (AppsFlyerExtension.conversionError != null)
+            errorCallback(AppsFlyerExtension.conversionError);
     }
 
     private static void successCallback(String response)
@@ -114,39 +118,41 @@ public class AppsFlyerExtension extends Extension {
         mainActivity.runOnUiThread(new Runnable() {
             @Override
    			public void run() {
+
                     AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), dKey);
+
+                    AppsFlyerLib.getInstance().registerConversionListener(Extension.mainContext, new AppsFlyerConversionListener() {
+                        /* Returns the attribution data. Note - the same conversion data is returned every time per install */
+                        @Override
+                        public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
+                            for (String attrName : conversionData.keySet()) {
+                                Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+                            }
+                            setInstallData(conversionData);
+                        }
+
+                        @Override
+                        public void onInstallConversionFailure(String errorMessage) {
+                            Log.d(AppsFlyerLib.LOG_TAG, "error getting conversion data: " + errorMessage);
+                            conversionError = "error getting conversion data: " + errorMessage;
+                            errorCallback(conversionError);
+                        }
+
+                        /* Called only when a Deep Link is opened */
+                        @Override
+                        public void onAppOpenAttribution(Map<String, String> conversionData) {
+                            for (String attrName : conversionData.keySet()) {
+                                Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+                            }
+                        }
+
+                        @Override
+                        public void onAttributionFailure(String errorMessage) {
+                            Log.d(AppsFlyerLib.LOG_TAG, "error onAttributionFailure : " + errorMessage);
+                        }
+                    });
     			}
 		});
-
-        AppsFlyerLib.getInstance().registerConversionListener(Extension.mainContext, new AppsFlyerConversionListener() {
-            /* Returns the attribution data. Note - the same conversion data is returned every time per install */
-            @Override
-            public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
-                for (String attrName : conversionData.keySet()) {
-                    Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
-                }
-                setInstallData(conversionData);
-            }
-
-            @Override
-            public void onInstallConversionFailure(String errorMessage) {
-                Log.d(AppsFlyerLib.LOG_TAG, "error getting conversion data: " + errorMessage);
-                errorCallback("error getting conversion data: " + errorMessage);
-            }
-
-            /* Called only when a Deep Link is opened */
-            @Override
-            public void onAppOpenAttribution(Map<String, String> conversionData) {
-                for (String attrName : conversionData.keySet()) {
-                    Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
-                }
-            }
-
-            @Override
-            public void onAttributionFailure(String errorMessage) {
-                Log.d(AppsFlyerLib.LOG_TAG, "error onAttributionFailure : " + errorMessage);
-            }
-        });
 	}
 
 	public static void trackEvent (String eventName, String eventData) {
