@@ -89,7 +89,7 @@ public class AppsFlyerExtension extends Extension {
             final String is_fb = "fb" + conversionData.get("is_fb");*/
 
             installConversionData = String.join("&", install_type, media_source, campaign, adset_id);
-            Log.v((AppsFlyerLib.LOG_TAG, "ad campaign info: " + installConversionData);
+            Log.v(AppsFlyerLib.LOG_TAG, "ad campaign info: " + installConversionData);
             successCallback(installConversionData);
             sessionCount++;
         }
@@ -98,7 +98,7 @@ public class AppsFlyerExtension extends Extension {
 
 	public static void startTracking (String devKey, String appId) {
 		final String dKey = devKey;
-		Log.v((AppsFlyerLib.LOG_TAG, "startTracking");
+		Log.v(AppsFlyerLib.LOG_TAG, "startTracking");
 
         AppsFlyerConversionListener conversionListener = new AppsFlyerConversionListener() {
             /* Returns the attribution data. Note - the same conversion data is returned every time per install */
@@ -140,7 +140,7 @@ public class AppsFlyerExtension extends Extension {
 
 	public static void trackEvent (String eventName, String eventData) {
 
-		Log.v((AppsFlyerLib.LOG_TAG, "Trying to send. trackEvent: " + eventName + ", data: " + eventData);
+		Log.v(AppsFlyerLib.LOG_TAG, "Trying to send. trackEvent: " + eventName + ", data: " + eventData);
 		Map<String, Object> eventValue = new HashMap<String, Object>();
 		if (eventData != null) {
 			try {
@@ -153,9 +153,9 @@ public class AppsFlyerExtension extends Extension {
 					eventValue.put(key,jObject.get(key));
 				}
 				AppsFlyerLib.getInstance().trackEvent(Extension.mainContext, eventName, eventValue);
-				Log.v((AppsFlyerLib.LOG_TAG, "Success!");
+				Log.v(AppsFlyerLib.LOG_TAG, "Success!");
 			} catch (final JSONException e) {
-				Log.e((AppsFlyerLib.LOG_TAG, "Json parsing error: " + e.getMessage());
+				Log.e(AppsFlyerLib.LOG_TAG, "Json parsing error: " + e.getMessage());
 			}
 		}
 	}
