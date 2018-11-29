@@ -18,7 +18,7 @@ class AppsFlyerExtension {
 		private static var appsflyerextension_trackEvent = Lib.load ("appsflyerextension", "appsflyerextension_trackEvent", 2);
 	#end
 	#if (android && openfl)
-		public vae onSuccess_jni:String -> Void;
+		public var onSuccess_jni:String -> Void;
 		public var onError_jni:String -> Void;
 		private static var appsflyerextension_addConversionListenerCallback_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "addConversionListenerCallback", "(Lorg/haxe/lime/HaxeObject;)V");
 		private static var appsflyerextension_startTracking_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "startTracking", "(Ljava/lang/String;Ljava/lang/String;)V");
