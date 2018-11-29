@@ -102,7 +102,7 @@ public class AppsFlyerExtension extends Extension {
 		final String dKey = devKey;
 		Log.v(AppsFlyerLib.LOG_TAG, "startTracking");
 
-        AppsFlyerConversionListener conversionListener = new AppsFlyerConversionListener() {
+        final AppsFlyerConversionListener conversionListener = new AppsFlyerConversionListener() {
             /* Returns the attribution data. Note - the same conversion data is returned every time per install */
             @Override
             public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
