@@ -151,6 +151,8 @@ public class AppsFlyerExtension extends Extension {
                             Log.d(AppsFlyerLib.LOG_TAG, "error onAttributionFailure : " + errorMessage);
                         }
                     });
+
+                    Log.v(AppsFlyerLib.LOG_TAG, "registerConversionListener inside ui thread");
     			}
 		});
 	}

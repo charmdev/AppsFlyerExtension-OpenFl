@@ -26,7 +26,7 @@ android {
 
 dependencies {
     repositories {
-		google()
+		mavenCentral()
 	}
     compile project(':deps:extension-api')
 	implementation 'com.appsflyer:af-android-sdk:4+@aar'
