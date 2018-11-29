@@ -10,9 +10,11 @@ import android.os.Handler;
 import android.view.View;
 import android.util.Log;
 import com.appsflyer.AppsFlyerLib;
+import com.appsflyer.AppsFlyerConversionListener;
 import android.app.Application;
 import java.util.*;
 import java.lang.Runnable;
+import org.haxe.lime.HaxeObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,7 +57,7 @@ public class AppsFlyerExtension extends Extension {
 
         AppsFlyerExtension.callbackObj = callbackObj;
 
-        if (GoogleReferrer.installConversionData != null)
+        if (AppsFlyerExtension.installConversionData != null)
             successCallback(AppsFlyerExtension.installConversionData);
     }
 
