@@ -71,15 +71,25 @@ public class AppsFlyerExtension extends Extension {
             AppsFlyerExtension.callbackObj.call1("onError_jni", errMsg);
     }
 
-    public static void setInstallData(Map<String, String> conversionData){
+    private static void setInstallData(Map<String, String> conversionData){
         if(sessionCount == 0){
-            final String install_type = "Install Type: " + conversionData.get("af_status") + "\n";
-            final String media_source = "Media Source: " + conversionData.get("media_source") + "\n";
-            final String install_time = "Install Time(GMT): " + conversionData.get("install_time") + "\n";
-            final String click_time = "Click Time(GMT): " + conversionData.get("click_time") + "\n";
-            final String is_first_launch = "Is First Launch: " + conversionData.get("is_first_launch") + "\n";
+        /*"ad"
+        "ad_id"
+        "campaign"
+        "campaign_id"*/
 
-            installConversionData = install_type + media_source + install_time + click_time + is_first_launch;
+            final String install_type = "utm_medium=" + conversionData.get("af_status");
+            final String media_source = "utm_source=" + conversionData.get("media_source");
+            final String campaign = "utm_campaign=" + conversionData.get("campaign");
+            final String adset_id = "adset_id=" + conversionData.get("adset_id");
+
+            /*final String install_time = "Install Time(GMT): " + conversionData.get("install_time") + "&";
+            final String click_time = "Click Time(GMT): " + conversionData.get("click_time") + "&";
+            final String is_first_launch = "first" + conversionData.get("is_first_launch");
+            final String is_fb = "fb" + conversionData.get("is_fb");*/
+
+            installConversionData = String.join("&", install_type, media_source, campaign, adset_id);
+            Log.v((AppsFlyerLib.LOG_TAG, "ad campaign info: " + installConversionData);
             successCallback(installConversionData);
             sessionCount++;
         }
