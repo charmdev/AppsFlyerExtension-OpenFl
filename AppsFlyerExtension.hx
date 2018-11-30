@@ -21,7 +21,7 @@ class AppsFlyerExtension {
 		public var onSuccess_jni:String -> Void;
 		public var onError_jni:String -> Void;
 		private static var appsflyerextension_addConversionListenerCallback_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "addConversionListenerCallback", "(Lorg/haxe/lime/HaxeObject;)V");
-		private static var appsflyerextension_startTracking_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "startTracking", "(Ljava/lang/String;Ljava/lang/String;)V");
+		private static var appsflyerextension_startTracking_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "startTracking", "(Ljava/lang/String;)V");
 		private static var appsflyerextension_trackEvent_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "trackEvent", "(Ljava/lang/String;Ljava/lang/String;)V");
 	#end
 
@@ -43,8 +43,7 @@ class AppsFlyerExtension {
 	public static function startTracking (devKey:String, appId:String = ""):Void {
 		
 		#if (android && openfl)
-		appsflyerextension_startTracking_jni(devKey, appId);
-		appsflyerextension_startTracking(devKey, appId);
+		appsflyerextension_startTracking_jni(devKey);
 		#end
 		#if (neko || cpp)
 		appsflyerextension_startTracking(devKey, appId);
