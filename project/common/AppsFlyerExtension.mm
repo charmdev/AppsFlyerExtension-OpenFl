@@ -13,6 +13,7 @@
     	NSLog(@"%@",key);
     	[AppsFlyerTracker sharedTracker].appleAppID = aId;
 		[AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
+		[AppsFlyerTracker sharedTracker].delegate = self;
 
         [[AppsFlyerTracker sharedTracker] trackAppLaunch];
     }
@@ -21,6 +22,21 @@
     	NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
 		[[AppsFlyerTracker sharedTracker] trackEvent:eventName withValues:responseDic];
     }
+	-(void)onConversionDataReceived:(NSDictionary*) installData 
+	{
+		NSLog(@"%@", installData);
+		id status = [installData objectForKey:@"af_status"];
+		if([status isEqualToString:@"Non-organic"]) {
+			id sourceID = [installData objectForKey:@"media_source"];
+			id campaign = [installData objectForKey:@"campaign"];
+			NSLog(@"This is a none organic install. Media source: %@  Campaign: %@",sourceID,campaign);
+		} else if([status isEqualToString:@"Organic"]) {
+			NSLog(@"This is an organic install.");
+		}
+	}
+	-(void)onConversionDataRequestFailure:(NSError *) error {
+		NSLog(@"%@",error);
+	}
 
 @end
 
