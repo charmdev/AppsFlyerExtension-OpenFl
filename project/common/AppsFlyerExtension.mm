@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <AppsFlyerLib/AppsFlyerTracker.h>
 
-@interface AppsFlyerTrackerController : NSObject<UIApplicationDelegate>
+@interface AppsFlyerTrackerController : NSObject<UIApplicationDelegate, AppsFlyerTrackerDelegate>
 @end
 
 @implementation AppsFlyerTrackerController
