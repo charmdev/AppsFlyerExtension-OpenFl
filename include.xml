@@ -12,7 +12,7 @@
 	<section if="ios">
 		<ndll name="appsflyerextension" />
 		<dependency path="dependencies/ios/AppsFlyerLib.framework" />
-		<ios linker-flags="-ObjC" deployment="6.0" />
+		<ios linker-flags="-ObjC" />
 	</section>
 
 </project>
