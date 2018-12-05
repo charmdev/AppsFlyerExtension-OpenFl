@@ -41,7 +41,9 @@ class AppsFlyerExtension {
 	}
 	
 	public static function startTracking (devKey:String, appId:String = ""):Void {
-		
+
+		trace("AppsFlyerReferrerDetectStep startTracking");
+
 		#if (android && openfl)
 		appsflyerextension_startTracking_jni(devKey);
 		#end
@@ -52,6 +54,8 @@ class AppsFlyerExtension {
 	}
 
 	public static function trackEvent (eventName:String, eventData:String):Void {
+
+		trace("AppsFlyerReferrerDetectStep trackEvent");
 
 		#if (android && openfl)
 		appsflyerextension_trackEvent_jni(eventName, eventData);
