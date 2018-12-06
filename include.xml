@@ -11,6 +11,8 @@
 
 	<section if="ios">
 		<ndll name="appsflyerextension" />
+		<dependency name="AdSupport.framework" />
+		<dependency name="iAd.framework" />
 		<dependency path="dependencies/ios/AppsFlyerLib.framework" />
 		<ios linker-flags="-ObjC" />
 	</section>
