@@ -3,15 +3,13 @@
 	<include name="${HXCPP}/build-tool/BuildCommon.xml"/>
 
 	<files id="common">
-		<compilerflag value="-IincludeAndroid"/>
+		<compilerflag value="-Iinclude"/>
 		<file name="common/ExternalInterface.cpp"/>
-		<file name="common/AppsFlyerExtension.cpp"/>
 	</files>
 	<files id="iphone">
-		<compilerflag value="-IincludeIos"/>
+		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-F../dependencies/ios/" />
-		<file name="common/ExternalInterface.mm"/>
-		<file name="common/AppsFlyerExtension.mm"/>
+		<file name="src/AppsFlyerAppDelegate.mm"/>
 	</files>
 	
 	<set name="DEBUGEXTRA" value="-debug" if="fulldebug" />
