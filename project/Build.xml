@@ -9,7 +9,7 @@
 	</files>
 	<files id="iphone">
 		<compilerflag value="-IincludeIos"/>
-		<compilerflag value="-F../dependencies/ios/" />
+		<compilerflag value="-F../dependencies/ios/" />
 		<file name="common/ExternalInterface.mm"/>
 		<file name="common/AppsFlyerExtension.mm"/>
 	</files>
