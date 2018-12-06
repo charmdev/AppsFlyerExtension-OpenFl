@@ -6,6 +6,7 @@
 @interface AppsFlyerTrackerController : NSObject<UIApplicationDelegate, AppsFlyerTrackerDelegate>
 	- (void)startTracking:(NSString *)key withId:(NSString *)aId;
 	- (void)trackEvent:(NSString *)eventName withData:(NSData*)data
+
 @end
 
 #endif

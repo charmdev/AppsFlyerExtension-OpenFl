@@ -1,59 +1,69 @@
-#include "UtilsIos.h"
+#include "Utils.h"
 #import <UIKit/UIKit.h>
 #import <AppsFlyerLib/AppsFlyerTracker.h>
 
-@implementation AppsFlyerTrackerController
+extern "C" void returnConversionSuccess (const char* data);
+extern "C" void returnConversionError (const char* data);
 
-	- (void)startTracking:(NSString*)key withId:(NSString*)aId
-    {
-    	NSLog(@"AppsFlyerTrackerController startTracking");
-    	NSLog(@"%@",key);
-    	[AppsFlyerTracker sharedTracker].appleAppID = aId;
-		[AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
-		[AppsFlyerTracker sharedTracker].delegate = self;
+@interface NMEAppDelegate : NSObject <UIApplicationDelegate, AppsFlyerTrackerDelegate>
+@end
 
-        [[AppsFlyerTracker sharedTracker] trackAppLaunch];
+// Copied from Apple's header in case it is missing in some cases (e.g. pre-Xcode 8 builds).
+#ifndef NSFoundationVersionNumber_iOS_9_x_Max
+#define NSFoundationVersionNumber_iOS_9_x_Max 1299
+#endif
+
+@implementation NMEAppDelegate(UIApplicationDelegate)
+
+-(BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *) launchOptions
+{
+    [AppsFlyerTracker sharedTracker].delegate = self;
+    return YES;
+}
+
+-(void)onConversionDataReceived:(NSDictionary*) installData
+{
+    NSLog(@"%@", installData);
+    id status = [installData objectForKey:@"af_status"];
+    if([status isEqualToString:@"Non-organic"]) {
+        id sourceID = [installData objectForKey:@"media_source"];
+        id campaign = [installData objectForKey:@"campaign"];
+        NSLog(@"This is a none organic install. Media source: %@  Campaign: %@",sourceID,campaign);
+    } else if([status isEqualToString:@"Organic"]) {
+        NSLog(@"This is an organic install.");
     }
-    - (void) trackEvent:(NSString *)eventName withData:(NSData*)data
-    {
-    	NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-		[[AppsFlyerTracker sharedTracker] trackEvent:eventName withValues:responseDic];
+    
+    NSMutableString *resultString = [NSMutableString string];
+    for (NSString* key in [installData allKeys]){
+        if ([resultString length]>0)
+            [resultString appendString:@"&"];
+        [resultString appendFormat:@"%@=%@", key, [installData objectForKey:key]];
     }
-	-(void)onConversionDataReceived:(NSDictionary*) installData 
-	{
-		NSLog(@"%@", installData);
-		id status = [installData objectForKey:@"af_status"];
-		if([status isEqualToString:@"Non-organic"]) {
-			id sourceID = [installData objectForKey:@"media_source"];
-			id campaign = [installData objectForKey:@"campaign"];
-			NSLog(@"This is a none organic install. Media source: %@  Campaign: %@",sourceID,campaign);
-		} else if([status isEqualToString:@"Organic"]) {
-			NSLog(@"This is an organic install.");
-		}
-	}
-	-(void)onConversionDataRequestFailure:(NSError *) error {
-		NSLog(@"%@",error);
-	}
+    
+    returnConversionSuccess([resultString UTF8String]);
+}
+
+-(void)onConversionDataRequestFailure:(NSError *) error {
+    NSLog(@"%@", error);
+    NSString *resultString = [NSString stringWithFormat:@"%@", error];
+    
+    returnConversionError([resultString UTF8String]);
+}
+
 
 @end
 
 namespace appsflyerextension {
 
-	AppsFlyerTrackerController* getController()
-	{
-		static AppsFlyerTrackerController* controller = NULL;
-		if(controller == NULL)
-		{
-			controller = [[AppsFlyerTrackerController alloc] init];
-		}
-		return controller;
-	}
 	void StartTracking(std::string devkey, std::string appId) {
 		NSLog(@"appsflyerextension StartTracking");
 		NSString* key = [[NSString alloc] initWithUTF8String:devkey.c_str()];
 		NSString* aId = [[NSString alloc] initWithUTF8String:appId.c_str()];
-		AppsFlyerTrackerController* controller = getController();
-		[controller startTracking:key withId:aId];
+
+        [AppsFlyerTracker sharedTracker].appleAppID = aId;
+        [AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
+        
+        [[AppsFlyerTracker sharedTracker] trackAppLaunch];
 
 	}
 	void TrackEvent(std::string eventName, std::string eventData) {
@@ -61,9 +71,11 @@ namespace appsflyerextension {
 		NSString* eName = [[NSString alloc] initWithUTF8String:eventName.c_str()];
 		NSString* jsonStr = [[NSString alloc] initWithUTF8String:eventData.c_str()];
 		NSData* data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+        
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+        [[AppsFlyerTracker sharedTracker] trackEvent:eName withValues:responseDic];
 
-		AppsFlyerTrackerController* controller = getController();
-		[controller trackEvent:eName withData:data];
+        NSLog(@"%@", responseDic);
     }
 	
 	
