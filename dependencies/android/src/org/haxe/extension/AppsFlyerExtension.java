@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.util.Log;
+import com.google.common.base.Joiner;
 import com.appsflyer.AppsFlyerLib;
 import com.appsflyer.AppsFlyerConversionListener;
 import android.app.Application;
@@ -183,31 +184,9 @@ public class AppsFlyerExtension extends Extension {
     }
 
     private static void setInstallData(Map<String, String> conversionData){
-        if(sessionCount == 0){
-
-            final String s = conversionData.get("af_status");
-            if (s.equals("Organic"))
-            {
-                installConversionData = "status=" + s;
-            }
-
-            if (s.equals("Non-organic"))
-            {
-                final String install_type = "utm_medium=" + conversionData.get("af_status");
-                final String media_source = "utm_source=" + conversionData.get("media_source");
-                final String campaign = "utm_campaign=" + conversionData.get("campaign");
-                final String adset_id = "adset_id=" + conversionData.get("adset_id");
-                final String adset = "adset=" + conversionData.get("adset");
-                final String install_time = "inst" + conversionData.get("install_time");
-                final String click_time = "clct " + conversionData.get("click_time");
-                final String fb = "fb " + conversionData.get("is_fb");
-
-                installConversionData = install_type +"&"+ media_source +"&"+ campaign +"&"+ adset_id  +"&"+  adset  +"&"+ install_time +"&"+ click_time +"&"+ fb;
-            }
-            if (s.equals("Error"))
-            {
-                installConversionData = "status=error";
-            }
+        if(sessionCount == 0)
+        {
+            installConversionData = Joiner.on("&").withKeyValueSeparator("=").join(conversionData);
 
             Log.v(AppsFlyerLib.LOG_TAG, "ad campaign info: " + installConversionData);
             successCallback(installConversionData);

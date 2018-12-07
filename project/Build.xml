@@ -12,6 +12,10 @@
 		<file name="src/AppsFlyerAppDelegate.mm"/>
 	</files>
 	
+	<set name="SLIBEXT" value=".lib" if="windows"/>
+	<set name="SLIBEXT" value=".a" unless="windows"/>
+	<set name="SLIBEXT" value=".so" if="webos"/>
+	
 	<set name="DEBUGEXTRA" value="-debug" if="fulldebug" />
 	
 	<target id="NDLL" output="${LIBPREFIX}appsflyerextension${MSVC_LIB_VERSION}${DEBUGEXTRA}${LIBEXTRA}" tool="linker" toolid="${STD_MODULE_LINK}">
@@ -24,9 +28,7 @@
 	</target>
 	
 	<target id="default">
-		
-		<target id="NDLL"/>
-		
+		<target id="NDLL" if="ios"/>
 	</target>
 	
 </xml>
