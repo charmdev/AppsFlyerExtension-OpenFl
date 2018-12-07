@@ -65,7 +65,6 @@ class AppsFlyerExtension {
 		#if (android)
 
 			appsflyerextension_trackEvent_jni(eventName, eventData);
-			appsflyerextension_trackEvent(eventName, eventData);
 
 		#end
 		#if (ios)
