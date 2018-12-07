@@ -13,7 +13,7 @@ import openfl.utils.JNI;
 
 class AppsFlyerExtension {
 
-	#if (cpp || neko)
+	#if (ios)
 		private static var appsflyerextension_startTracking = Lib.load ("appsflyerextension", "appsflyerextension_startTracking", 2);
 		private static var appsflyerextension_trackEvent = Lib.load ("appsflyerextension", "appsflyerextension_trackEvent", 2);
 		private static var appsflyerextension_addConversionListenerCallback = Lib.load ("appsflyerextension", "appsflyerextension_addConversionListenerCallback", 2);
@@ -45,12 +45,12 @@ class AppsFlyerExtension {
 
 		trace("AppsFlyerReferrerDetectStep startTracking");
 
-		#if (android && openfl)
+		#if (android)
 
 			appsflyerextension_startTracking_jni(devKey);
 
 		#end
-		#if (neko || cpp)
+		#if (ios)
 
 			appsflyerextension_startTracking(devKey, appId);
 
@@ -62,13 +62,13 @@ class AppsFlyerExtension {
 
 		trace("AppsFlyerReferrerDetectStep trackEvent");
 
-		#if (android && openfl)
+		#if (android)
 
 			appsflyerextension_trackEvent_jni(eventName, eventData);
 			appsflyerextension_trackEvent(eventName, eventData);
 
 		#end
-		#if (neko || cpp)
+		#if (ios)
 
 			appsflyerextension_trackEvent(eventName, eventData);
 
@@ -78,14 +78,14 @@ class AppsFlyerExtension {
 
 	public static function addConversionListenerCallback(onSuccess:String -> Void, onError:String -> Void):Void {
 
-		#if (android && openfl)
+		#if (android)
 
 			getInstance().onSuccess_jni = onSuccess;
 			getInstance().onError_jni = onError;
 			appsflyerextension_addConversionListenerCallback_jni(getInstance());
 
 		#end
-		#if (neko || cpp)
+		#if (ios)
 
 			appsflyerextension_addConversionListenerCallback(onSuccess, onError);
 
