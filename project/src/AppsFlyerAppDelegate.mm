@@ -40,7 +40,7 @@ extern "C" void returnConversionError (const char* data);
         [resultString appendFormat:@"%@=%@", key, [installData objectForKey:key]];
     }
     
-    returnConversionSuccess([resultString UTF8String]);
+    appsflyerextension::returnConversionSuccess([resultString UTF8String]);
 }
 
 -(void)onConversionDataRequestFailure:(NSError *) error {
