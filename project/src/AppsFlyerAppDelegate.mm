@@ -40,14 +40,14 @@ extern "C" void returnConversionError (const char* data);
         [resultString appendFormat:@"%@=%@", key, [installData objectForKey:key]];
     }
     
-    appsflyerextension::returnConversionSuccess([resultString UTF8String]);
+    appsflyerextension::rConversionSuccess([resultString UTF8String]);
 }
 
 -(void)onConversionDataRequestFailure:(NSError *) error {
     NSLog(@"%@", error);
     NSString *resultString = [NSString stringWithFormat:@"%@", error];
     
-    returnConversionError([resultString UTF8String]);
+    appsflyerextension::rConversionError([resultString UTF8String]);
 }
 
 
@@ -55,6 +55,16 @@ extern "C" void returnConversionError (const char* data);
 
 namespace appsflyerextension {
 
+    void rConversionError (const char* data)
+    {
+        returnConversionError(data);
+    }
+    
+    void rConversionSuccess (const char* data)
+    {
+        returnConversionSuccess(data);
+    }
+    
 	void StartTracking(std::string devkey, std::string appId) {
 		NSLog(@"appsflyerextension StartTracking");
 		NSString* key = [[NSString alloc] initWithUTF8String:devkey.c_str()];
