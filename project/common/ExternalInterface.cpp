@@ -8,7 +8,10 @@
 
 
 #include <hx/CFFI.h>
-#include "Utils.h"
+#include "AppsFlyerAppInterface.h"
+
+#include <string>
+#include <vector>
 
 #define safe_val_string(str) str==NULL ? "" : std::string(val_string(str))
 #define safe_alloc_string(a) (a!=NULL?alloc_string(a):NULL)
@@ -16,8 +19,8 @@
 
 using namespace appsflyerextension;
 
-AutoGCRoot* _onSuccess;
-AutoGCRoot* _onError;
+AutoGCRoot* _onSuccess = 0;
+AutoGCRoot* _onError = 0;
 
 static void appsflyerextension_startTracking (value devkey, value appId) {
 	
@@ -34,7 +37,6 @@ static void appsflyerextension_trackEvent (value eventName, value eventData) {
 DEFINE_PRIM (appsflyerextension_trackEvent, 2);
 
 static void appsflyerextension_addConversionListenerCallback(value onSuccess, value onError) {
- 
     _onSuccess = new AutoGCRoot(onSuccess);
     _onError = new AutoGCRoot(onError);
     
@@ -54,10 +56,10 @@ extern "C" int appsflyerextension_register_prims () { return 0; }
 
 extern "C" void returnConversionSuccess (const char* data)
 {
-    val_call1(_onSuccess->get(), safe_alloc_string(data));
+    val_call1(_onSuccess->get(), alloc_string(data));
 }
 
 extern "C" void returnConversionError (const char* data)
 {
-    val_call1(_onError->get(), safe_alloc_string(data));
+    val_call1(_onError->get(), alloc_string(data));
 }

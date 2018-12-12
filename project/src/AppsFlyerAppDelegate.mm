@@ -1,4 +1,4 @@
-#include "Utils.h"
+#include "AppsFlyerAppInterface.h"
 #import <UIKit/UIKit.h>
 #import <AppsFlyerLib/AppsFlyerTracker.h>
 
@@ -14,6 +14,10 @@ extern "C" void returnConversionError (const char* data);
 #endif
 
 @implementation NMEAppDelegate(UIApplicationDelegate)
+
+static NSMutableString *resultString;
+static NSString *errorString;
+
 
 -(BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *) launchOptions
 {
@@ -33,60 +37,63 @@ extern "C" void returnConversionError (const char* data);
         NSLog(@"This is an organic install.");
     }
     
-    NSMutableString *resultString = [NSMutableString string];
+    resultString = [NSMutableString string];
     for (NSString* key in [installData allKeys]){
         if ([resultString length]>0)
             [resultString appendString:@"&"];
         [resultString appendFormat:@"%@=%@", key, [installData objectForKey:key]];
     }
     
-    appsflyerextension::rConversionSuccess([resultString UTF8String]);
+    if ([NSThread isMainThread]){
+        returnConversionSuccess([resultString UTF8String]);
+    }else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            returnConversionSuccess([resultString UTF8String]);
+        });
+    }
+    
 }
 
 -(void)onConversionDataRequestFailure:(NSError *) error {
     NSLog(@"%@", error);
-    NSString *resultString = [NSString stringWithFormat:@"%@", error];
+    errorString = [NSString stringWithFormat:@"%@", error];
     
-    appsflyerextension::rConversionError([resultString UTF8String]);
+    if ([NSThread isMainThread]){
+        returnConversionError([errorString UTF8String]);
+    }else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            returnConversionError([errorString UTF8String]);
+        });
+    }
 }
 
 
 @end
 
 namespace appsflyerextension {
-
-    void rConversionError (const char* data)
-    {
-        returnConversionError(data);
-    }
     
-    void rConversionSuccess (const char* data)
-    {
-        returnConversionSuccess(data);
-    }
-    
-	void StartTracking(std::string devkey, std::string appId) {
-		NSLog(@"appsflyerextension StartTracking");
-		NSString* key = [[NSString alloc] initWithUTF8String:devkey.c_str()];
-		NSString* aId = [[NSString alloc] initWithUTF8String:appId.c_str()];
-
+    void StartTracking(std::string devkey, std::string appId) {
+        NSLog(@"appsflyerextension StartTracking");
+        NSString* key = [[NSString alloc] initWithUTF8String:devkey.c_str()];
+        NSString* aId = [[NSString alloc] initWithUTF8String:appId.c_str()];
+        
         [AppsFlyerTracker sharedTracker].appleAppID = aId;
         [AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
         
         [[AppsFlyerTracker sharedTracker] trackAppLaunch];
-
-	}
-	void TrackEvent(std::string eventName, std::string eventData) {
-		NSLog(@"appsflyerextension TrackEvent");
-		NSString* eName = [[NSString alloc] initWithUTF8String:eventName.c_str()];
-		NSString* jsonStr = [[NSString alloc] initWithUTF8String:eventData.c_str()];
-		NSData* data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+        
+    }
+    void TrackEvent(std::string eventName, std::string eventData) {
+        NSLog(@"appsflyerextension TrackEvent");
+        NSString* eName = [[NSString alloc] initWithUTF8String:eventName.c_str()];
+        NSString* jsonStr = [[NSString alloc] initWithUTF8String:eventData.c_str()];
+        NSData* data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
         
         NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         [[AppsFlyerTracker sharedTracker] trackEvent:eName withValues:responseDic];
-
+        
         NSLog(@"%@", responseDic);
     }
-	
-	
+    
+    
 }
