@@ -201,7 +201,7 @@ public class AppsFlyerExtension extends Extension {
 	 */
 	public void onCreate (Bundle savedInstanceState) {
 		Log.v(AppsFlyerLib.LOG_TAG, "activity onCreate");
-        startTracking(getString(org.haxe.extension.appsflyerextension.R.string.af_app_id));
+        startTracking(getString(org.haxe.extension.appsflyerextension.R.string.af_dev_key));
 	}
 	
 	

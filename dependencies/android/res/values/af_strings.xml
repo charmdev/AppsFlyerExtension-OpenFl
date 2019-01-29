@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="af_app_id">::ENV_APPS_FLYER_APP_ID::</string>
+    <string name="af_dev_key">::ENV_APPS_FLYER_DEV_KEY::</string>
 </resources>
