@@ -60,7 +60,6 @@ public class AppsFlyerExtension extends Extension {
     public static String conversionError = null;
     public static int sessionCount = 0;
     public static HaxeObject callbackObj = null;
-    public static Boolean created = false;
 
     public AppsFlyerExtension()
     {
@@ -87,9 +86,50 @@ public class AppsFlyerExtension extends Extension {
             errorCallback(AppsFlyerExtension.conversionError);
     }
 
-    public static void startTracking (String devKey) {
+    private void startTracking (String devKey) {
         AppsFlyerExtension.devKey = devKey;
-        //startTrackingInternal();
+
+        Log.v(AppsFlyerLib.LOG_TAG, "startTracking with id: " + devKey);
+
+        final AppsFlyerConversionListener convListener = new AppsFlyerConversionListener() {
+            /* Returns the attribution data. Note - the same conversion data is returned every time per install */
+            @Override
+            public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
+                for (String attrName : conversionData.keySet()) {
+                    Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+                }
+                setInstallData(conversionData);
+            }
+
+            @Override
+            public void onInstallConversionFailure(String errorMessage) {
+                Log.d(AppsFlyerLib.LOG_TAG, "error getting conversion data: " + errorMessage);
+                conversionError = "error getting conversion data: " + errorMessage;
+                errorCallback(conversionError);
+            }
+
+            /* Called only when a Deep Link is opened */
+            @Override
+            public void onAppOpenAttribution(Map<String, String> conversionData) {
+                for (String attrName : conversionData.keySet()) {
+                    Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+                }
+            }
+
+            @Override
+            public void onAttributionFailure(String errorMessage) {
+                Log.d(AppsFlyerLib.LOG_TAG, "error onAttributionFailure : " + errorMessage);
+            }
+        };
+
+        AppsFlyerLib.getInstance().init(
+                devKey,
+                convListener,
+                Extension.mainContext
+        );
+
+        AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), devKey);
+
     }
 
     public static void trackEvent (String eventName, String eventData) {
@@ -113,63 +153,6 @@ public class AppsFlyerExtension extends Extension {
             }
         }
     }
-
-    // private - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    private void startTrackingInternal()
-    {
-        /*if (devKey != null && created)
-        {
-            mainActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-            }
-            });
-            //"zBmcjjAwXbYEHeDRZ9LYgW"*/
-
-                    Log.v(AppsFlyerLib.LOG_TAG, "startTracking");
-
-                    final AppsFlyerConversionListener convListener = new AppsFlyerConversionListener() {
-                        /* Returns the attribution data. Note - the same conversion data is returned every time per install */
-                        @Override
-                        public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
-                            for (String attrName : conversionData.keySet()) {
-                                Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
-                            }
-                            setInstallData(conversionData);
-                        }
-
-                        @Override
-                        public void onInstallConversionFailure(String errorMessage) {
-                            Log.d(AppsFlyerLib.LOG_TAG, "error getting conversion data: " + errorMessage);
-                            conversionError = "error getting conversion data: " + errorMessage;
-                            errorCallback(conversionError);
-                        }
-
-                        /* Called only when a Deep Link is opened */
-                        @Override
-                        public void onAppOpenAttribution(Map<String, String> conversionData) {
-                            for (String attrName : conversionData.keySet()) {
-                                Log.d(AppsFlyerLib.LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
-                            }
-                        }
-
-                        @Override
-                        public void onAttributionFailure(String errorMessage) {
-                            Log.d(AppsFlyerLib.LOG_TAG, "error onAttributionFailure : " + errorMessage);
-                        }
-                    };
-
-                    AppsFlyerLib.getInstance().init(
-                            "zBmcjjAwXbYEHeDRZ9LYgW",
-                            convListener ,
-                            Extension.mainContext
-                    );
-
-                    AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), "zBmcjjAwXbYEHeDRZ9LYgW");
-
-        //}
-    }
-
 
     private static void successCallback(String response)
     {
@@ -205,16 +188,20 @@ public class AppsFlyerExtension extends Extension {
 		return true;
 		
 	}
+
+    public String getString(int resId)
+    {
+        Context ctx = mainActivity;
+        return ctx.getString(resId);
+    }
 	
 	
 	/**
 	 * Called when the activity is starting.
 	 */
 	public void onCreate (Bundle savedInstanceState) {
-
 		Log.v(AppsFlyerLib.LOG_TAG, "activity onCreate");
-        AppsFlyerExtension.created = true;
-        startTrackingInternal();
+        startTracking(getString(org.haxe.extension.appsflyerextension.R.string.af_app_id));
 	}
 	
 	

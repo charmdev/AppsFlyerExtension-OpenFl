@@ -30,6 +30,6 @@ dependencies {
 	}
     compile project(':deps:extension-api')
 	compile group: 'com.google.guava', name: 'guava', version: '11.0.2'
-	implementation 'com.appsflyer:af-android-sdk:4.8.11' /* last stable version ! */
+	implementation 'com.appsflyer:af-android-sdk:4.8.18' /* 4.8.11   last stable version ! */
 	implementation 'com.android.installreferrer:installreferrer:1.0'
 }
