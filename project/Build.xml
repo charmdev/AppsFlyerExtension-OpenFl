@@ -9,7 +9,9 @@
 	<files id="iphone">
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-F../dependencies/ios/" />
+        <compilerflag value="-std=c++11" />
 		<file name="src/AppsFlyerAppDelegate.mm"/>
+		<file name="src/AppsFlyerObserver.mm"/>
 	</files>
 	
 	<set name="SLIBEXT" value=".lib" if="windows"/>

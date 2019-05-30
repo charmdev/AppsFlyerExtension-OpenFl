@@ -15,7 +15,7 @@
 
 #define safe_val_string(str) str==NULL ? "" : std::string(val_string(str))
 #define safe_alloc_string(a) (a!=NULL?alloc_string(a):NULL)
-
+#define safe_val_call1(func, arg1) if (func!=NULL) val_call1(func->get(), arg1)
 
 using namespace appsflyerextension;
 
@@ -52,14 +52,17 @@ DEFINE_ENTRY_POINT (appsflyerextension_main);
 
 
 
-extern "C" int appsflyerextension_register_prims () { return 0; }
+extern "C" int appsflyerextension_register_prims () { 
+	appsflyerextension::Pre_init();
+	return 0; 
+}
 
 extern "C" void returnConversionSuccess (const char* data)
 {
-    val_call1(_onSuccess->get(), alloc_string(data));
+    safe_val_call1(_onSuccess, safe_alloc_string(data));
 }
 
 extern "C" void returnConversionError (const char* data)
 {
-    val_call1(_onError->get(), alloc_string(data));
+    safe_val_call1(_onError, safe_alloc_string(data));
 }

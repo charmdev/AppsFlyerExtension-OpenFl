@@ -1,77 +1,29 @@
 #include "AppsFlyerAppInterface.h"
+#include "AppsFlyerObserver.h"
 #import <UIKit/UIKit.h>
 #import <AppsFlyerLib/AppsFlyerTracker.h>
 
-extern "C" void returnConversionSuccess (const char* data);
-extern "C" void returnConversionError (const char* data);
-
-@interface NMEAppDelegate : NSObject <UIApplicationDelegate, AppsFlyerTrackerDelegate>
-@end
-
-// Copied from Apple's header in case it is missing in some cases (e.g. pre-Xcode 8 builds).
-#ifndef NSFoundationVersionNumber_iOS_9_x_Max
-#define NSFoundationVersionNumber_iOS_9_x_Max 1299
-#endif
-
-@implementation NMEAppDelegate(UIApplicationDelegate)
-
-static NSMutableString *resultString;
-static NSString *errorString;
-
-
--(BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *) launchOptions
-{
-    [AppsFlyerTracker sharedTracker].delegate = self;
-    return YES;
-}
-
--(void)onConversionDataReceived:(NSDictionary*) installData
-{
-    NSLog(@"%@", installData);
-    id status = [installData objectForKey:@"af_status"];
-    if([status isEqualToString:@"Non-organic"]) {
-        id sourceID = [installData objectForKey:@"media_source"];
-        id campaign = [installData objectForKey:@"campaign"];
-        NSLog(@"This is a none organic install. Media source: %@  Campaign: %@",sourceID,campaign);
-    } else if([status isEqualToString:@"Organic"]) {
-        NSLog(@"This is an organic install.");
-    }
-    
-    resultString = [NSMutableString string];
-    for (NSString* key in [installData allKeys]){
-        if ([resultString length]>0)
-            [resultString appendString:@"&"];
-        [resultString appendFormat:@"%@=%@", key, [installData objectForKey:key]];
-    }
-    
-    if ([NSThread isMainThread]){
-        returnConversionSuccess([resultString UTF8String]);
-    }else{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            returnConversionSuccess([resultString UTF8String]);
-        });
-    }
-    
-}
-
--(void)onConversionDataRequestFailure:(NSError *) error {
-    NSLog(@"%@", error);
-    errorString = [NSString stringWithFormat:@"%@", error];
-    
-    if ([NSThread isMainThread]){
-        returnConversionError([errorString UTF8String]);
-    }else{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            returnConversionError([errorString UTF8String]);
-        });
-    }
-}
-
-
-@end
-
 namespace appsflyerextension {
     
+	AppsFlyerObserver *obs;
+	
+	void Pre_init() {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            
+            obs = [[AppsFlyerObserver alloc] init];
+            [[NSNotificationCenter defaultCenter]
+             addObserver:obs
+             selector:@selector(applicationDidFinishLaunching:)
+             name:@"UIApplicationDidFinishLaunchingNotification"
+             object:nil
+             ];
+            
+            NSLog(@"appsflyerextension Pre_init");
+            
+        });
+	}
+	
     void StartTracking(std::string devkey, std::string appId) {
         NSLog(@"appsflyerextension StartTracking");
         NSString* key = [[NSString alloc] initWithUTF8String:devkey.c_str()];
