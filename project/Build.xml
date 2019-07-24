@@ -1,6 +1,4 @@
 <xml>
-	<set name="HXCPP_CPP11" value="1" />
-	
 	<include name="${HXCPP}/build-tool/BuildCommon.xml"/>
 
 	<files id="common">
@@ -8,6 +6,8 @@
 		<file name="common/ExternalInterface.cpp"/>
 	</files>
 	<files id="iphone">
+		<compilerflag value="-stdlib=libc++" />
+		
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-F../dependencies/ios/" />
 		<file name="src/AppsFlyerAppDelegate.mm"/>
