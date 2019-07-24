@@ -1,4 +1,5 @@
 <xml>
+	<set name="HXCPP_CPP11" value="1" />
 	
 	<include name="${HXCPP}/build-tool/BuildCommon.xml"/>
 
