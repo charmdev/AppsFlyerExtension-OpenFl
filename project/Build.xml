@@ -29,7 +29,7 @@
 	</target>
 	
 	<target id="default">
-		<target id="NDLL" if="ios"/>
+		<target id="NDLL"/>
 	</target>
 	
 </xml>
