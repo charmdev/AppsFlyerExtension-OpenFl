@@ -12,6 +12,7 @@ import android.util.Log;
 import com.google.common.base.Joiner;
 import com.appsflyer.AppsFlyerLib;
 import com.appsflyer.AppsFlyerConversionListener;
+import com.appsflyer.AppsFlyerTrackingRequestListener;
 import android.app.Application;
 import java.util.*;
 import java.lang.Runnable;
@@ -55,7 +56,7 @@ public class AppsFlyerExtension extends Extension {
 
     private static AppsFlyerExtension instance = null;
 	
-    private static String LOG_TAG = "LOG_TAG";
+    private static String LOG_TAG = "AppsFlyer";
 
     public static String devKey = null;
     public static String installConversionData = null;
@@ -123,6 +124,20 @@ public class AppsFlyerExtension extends Extension {
                 Log.d(LOG_TAG, "error onAttributionFailure : " + errorMessage);
             }
         };
+	    
+	final AppsFlyerTrackingRequestListener requestListener = new AppsFlyerTrackingRequestListener() {
+                @Override
+                public void onTrackingRequestSuccess() {
+                    Log.d(LOGTAG,"Request to server successfully sent");
+                }
+
+                @Override
+                public void onTrackingRequestFailure(String s) {
+                    Log.d(LOGTAG,"Error sending request to server: "+s);
+		    conversionError = "Error sending request to server: "+s;
+		    errorCallback(conversionError);
+                }
+            }    
 
         AppsFlyerLib.getInstance().init(
                 devKey,
