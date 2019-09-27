@@ -145,7 +145,7 @@ public class AppsFlyerExtension extends Extension {
                 Extension.mainContext
         );
 
-        AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), devKey);
+        AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), devKey, requestListener);
 
     }
 
