@@ -137,7 +137,7 @@ public class AppsFlyerExtension extends Extension {
 		    conversionError = "Error sending request to server: "+s;
 		    errorCallback(conversionError);
                 }
-            }    
+            };    
 
         AppsFlyerLib.getInstance().init(
                 devKey,
