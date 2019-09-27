@@ -128,12 +128,12 @@ public class AppsFlyerExtension extends Extension {
 	final AppsFlyerTrackingRequestListener requestListener = new AppsFlyerTrackingRequestListener() {
                 @Override
                 public void onTrackingRequestSuccess() {
-                    Log.d(LOGTAG,"Request to server successfully sent");
+                    Log.d(LOG_TAG,"Request to server successfully sent");
                 }
 
                 @Override
                 public void onTrackingRequestFailure(String s) {
-                    Log.d(LOGTAG,"Error sending request to server: "+s);
+                    Log.d(LOG_TAG,"Error sending request to server: "+s);
 		    conversionError = "Error sending request to server: "+s;
 		    errorCallback(conversionError);
                 }
