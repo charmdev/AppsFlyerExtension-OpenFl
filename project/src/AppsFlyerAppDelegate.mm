@@ -81,6 +81,19 @@ namespace appsflyerextension {
         [AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
         
         [[AppsFlyerTracker sharedTracker] trackAppLaunch];
+
+        [[AppsFlyerTracker sharedTracker] trackAppLaunchWithCompletionHandler:^(NSDictionary<NSString *,id> *dictionary, NSError *error) {
+            if (error) {
+                errorString = [NSString stringWithFormat:@"%@", error];
+                if ([NSThread isMainThread]){
+                    returnConversionError([errorString UTF8String]);
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        returnConversionError([errorString UTF8String]);
+                    });
+                }
+            }
+        }];
         
     }
     void TrackEvent(std::string eventName, std::string eventData) {
