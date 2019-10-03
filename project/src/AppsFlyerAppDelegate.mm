@@ -5,7 +5,7 @@
 extern "C" void returnConversionSuccess (const char* data);
 extern "C" void returnConversionError (const char* data);
 
-@interface NMEAppDelegate : NSObject <UIApplicationDelegate, AppsFlyerTrackerDelegate>
+@interface ConversionListener : NSObject <AppsFlyerTrackerDelegate>
 @end
 
 // Copied from Apple's header in case it is missing in some cases (e.g. pre-Xcode 8 builds).
@@ -13,17 +13,19 @@ extern "C" void returnConversionError (const char* data);
 #define NSFoundationVersionNumber_iOS_9_x_Max 1299
 #endif
 
-@implementation NMEAppDelegate(UIApplicationDelegate)
+@implementation ConversionListener
 
 static NSMutableString *resultString;
 static NSString *errorString;
 
-
+/*
 -(BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *) launchOptions
 {
     [AppsFlyerTracker sharedTracker].delegate = self;
+    NSLog(@"willFinishLaunchingWithOptions AppsFlyer");
     return YES;
 }
+*/
 
 -(void)onConversionDataReceived:(NSDictionary*) installData
 {
@@ -71,18 +73,26 @@ static NSString *errorString;
 @end
 
 namespace appsflyerextension {
+
+    void Init()
+    {
+        ConversionListener *listener = [[ConversionListener alloc] init];
+        NSLog(@"appsflyerextension Init");
+        [AppsFlyerTracker sharedTracker].delegate = listener;
+        NSLog(@"appsflyerextension Init");
+    }
     
     void StartTracking(std::string devkey, std::string appId) {
-        NSLog(@"appsflyerextension StartTracking");
+        NSLog(@"appsflyerextension StartTracking1");
         NSString* key = [[NSString alloc] initWithUTF8String:devkey.c_str()];
         NSString* aId = [[NSString alloc] initWithUTF8String:appId.c_str()];
         
         [AppsFlyerTracker sharedTracker].appleAppID = aId;
         [AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
-        
-        [[AppsFlyerTracker sharedTracker] trackAppLaunch];
 
         [[AppsFlyerTracker sharedTracker] trackAppLaunchWithCompletionHandler:^(NSDictionary<NSString *,id> *dictionary, NSError *error) {
+            NSLog(@"appsflyerextension callback!!!");
+            
             if (error) {
                 errorString = [NSString stringWithFormat:@"%@", error];
                 if ([NSThread isMainThread]){
@@ -92,6 +102,10 @@ namespace appsflyerextension {
                         returnConversionError([errorString UTF8String]);
                     });
                 }
+            }
+            if (dictionary) {
+                NSLog(@"%@", dictionary);
+                //onConversionDataReceived(dictionary);
             }
         }];
         
@@ -107,6 +121,5 @@ namespace appsflyerextension {
         
         NSLog(@"%@", responseDic);
     }
-    
     
 }
