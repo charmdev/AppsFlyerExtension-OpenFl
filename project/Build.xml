@@ -12,7 +12,7 @@
 	</files>
 	<files id="android">
 		<compilerflag value="-Iinclude"/>
-		<!--<file name="src/AppsFlyerExtension.cpp"/>-->
+		<file name="src/AppsFlyerExtension.cpp"/>
 	</files>
 	
 	<set name="SLIBEXT" value=".lib" if="windows"/>
