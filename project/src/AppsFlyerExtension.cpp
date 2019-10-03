@@ -11,4 +11,8 @@ namespace appsflyerextension
 	{
 		
 	}
+	
+	void Init()
+	{
+	}
 }
