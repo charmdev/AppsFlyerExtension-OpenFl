@@ -90,7 +90,9 @@ namespace appsflyerextension {
         [AppsFlyerTracker sharedTracker].appleAppID = aId;
         [AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
 
-        [[AppsFlyerTracker sharedTracker] trackAppLaunchWithCompletionHandler:^(NSDictionary<NSString *,id> *dictionary, NSError *error) {
+        [[AppsFlyerTracker sharedTracker] trackAppLaunch];
+
+        /*WithCompletionHandler:^(NSDictionary<NSString *,id> *dictionary, NSError *error) {
             NSLog(@"appsflyerextension callback!!!");
             
             if (error) {
@@ -108,7 +110,7 @@ namespace appsflyerextension {
                 //onConversionDataReceived(dictionary);
             }
         }];
-        
+        */
     }
     void TrackEvent(std::string eventName, std::string eventData) {
         NSLog(@"appsflyerextension TrackEvent");
