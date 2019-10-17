@@ -76,20 +76,17 @@ namespace appsflyerextension {
 
     void Init()
     {
+        [AppsFlyerTracker sharedTracker].appleAppID = [[NSBundle mainBundle].infoDictionary objectForKey:@"AppsFlyerAppId"];
+        [AppsFlyerTracker sharedTracker].appsFlyerDevKey = [[NSBundle mainBundle].infoDictionary objectForKey:@"AppsFlyerDevKey"];
+        NSLog(@"appsflyerextension Init appId:%@, appKey:%@", [AppsFlyerTracker sharedTracker].appleAppID, [AppsFlyerTracker sharedTracker].appsFlyerDevKey);
+
         ConversionListener *listener = [[ConversionListener alloc] init];
-        NSLog(@"appsflyerextension Init");
         [AppsFlyerTracker sharedTracker].delegate = listener;
         NSLog(@"appsflyerextension Init");
     }
     
     void StartTracking(std::string devkey, std::string appId) {
         NSLog(@"appsflyerextension StartTracking1");
-        NSString* key = [[NSString alloc] initWithUTF8String:devkey.c_str()];
-        NSString* aId = [[NSString alloc] initWithUTF8String:appId.c_str()];
-        
-        [AppsFlyerTracker sharedTracker].appleAppID = aId;
-        [AppsFlyerTracker sharedTracker].appsFlyerDevKey = key;
-
         [[AppsFlyerTracker sharedTracker] trackAppLaunch];
 
         /*WithCompletionHandler:^(NSDictionary<NSString *,id> *dictionary, NSError *error) {

@@ -21,6 +21,8 @@ using namespace appsflyerextension;
 
 AutoGCRoot* _onSuccess = 0;
 AutoGCRoot* _onError = 0;
+AutoGCRoot* _conversionSuccessResult = 0;
+AutoGCRoot* _conversionErrorResult = 0;
 
 static void appsflyerextension_startTracking (value devkey, value appId) {
 	
@@ -39,6 +41,15 @@ DEFINE_PRIM (appsflyerextension_trackEvent, 2);
 static void appsflyerextension_addConversionListenerCallback(value onSuccess, value onError) {
     _onSuccess = new AutoGCRoot(onSuccess);
     _onError = new AutoGCRoot(onError);
+
+    if (_conversionSuccessResult != 0)
+    {
+        val_call1(_onSuccess->get(), _conversionSuccessResult->get());
+    }
+    else if (_conversionErrorResult != 0)
+    {
+        val_call1(_onError->get(), _conversionErrorResult->get());
+    }
     
 }
 DEFINE_PRIM (appsflyerextension_addConversionListenerCallback, 2);
@@ -59,10 +70,25 @@ extern "C" int appsflyerextension_register_prims () {
 
 extern "C" void returnConversionSuccess (const char* data)
 {
-    val_call1(_onSuccess->get(), alloc_string(data));
+    if (_onSuccess != 0)
+    {
+        val_call1(_onSuccess->get(), alloc_string(data));
+    }
+    else
+    {
+        _conversionSuccessResult = new AutoGCRoot(alloc_string(data));
+    }
+    
 }
 
 extern "C" void returnConversionError (const char* data)
 {
-    val_call1(_onError->get(), alloc_string(data));
+    if (_onError != 0)
+    {
+        val_call1(_onError->get(), alloc_string(data));
+    }
+    else
+    {
+        _conversionErrorResult = new AutoGCRoot(alloc_string(data));
+    }
 }
