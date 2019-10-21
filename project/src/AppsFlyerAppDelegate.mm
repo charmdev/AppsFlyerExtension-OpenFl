@@ -18,6 +18,7 @@ extern "C" void returnConversionError (const char* data);
 static NSMutableString *resultString;
 static NSString *errorString;
 
+
 /*
 -(BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *) launchOptions
 {
@@ -38,37 +39,26 @@ static NSString *errorString;
     } else if([status isEqualToString:@"Organic"]) {
         NSLog(@"This is an organic install.");
     }
-    
-    resultString = [NSMutableString string];
-    for (NSString* key in [installData allKeys]){
-        if ([resultString length]>0)
-            [resultString appendString:@"&"];
-        [resultString appendFormat:@"%@=%@", key, [installData objectForKey:key]];
-    }
-    
-    if ([NSThread isMainThread]){
-        returnConversionSuccess([resultString UTF8String]);
-    }else{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            returnConversionSuccess([resultString UTF8String]);
-        });
-    }
-    
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableString* referrerUri = [[NSMutableString alloc] init];
+        for (NSString* key in [installData allKeys]) {
+            if ([referrerUri length]>0)
+                [referrerUri appendString:@"&"];
+            [referrerUri appendFormat:@"%@=%@", key, [installData objectForKey:key]];
+        }
+        returnConversionSuccess([referrerUri UTF8String]);
+    });
 }
 
 -(void)onConversionDataRequestFailure:(NSError *) error {
     NSLog(@"%@", error);
     errorString = [NSString stringWithFormat:@"%@", error];
     
-    if ([NSThread isMainThread]){
+    dispatch_async(dispatch_get_main_queue(), ^{
         returnConversionError([errorString UTF8String]);
-    }else{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            returnConversionError([errorString UTF8String]);
-        });
-    }
+    });
 }
-
 
 @end
 

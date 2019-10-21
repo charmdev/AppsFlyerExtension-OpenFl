@@ -78,7 +78,6 @@ extern "C" void returnConversionSuccess (const char* data)
     {
         _conversionSuccessResult = new AutoGCRoot(alloc_string(data));
     }
-    
 }
 
 extern "C" void returnConversionError (const char* data)
