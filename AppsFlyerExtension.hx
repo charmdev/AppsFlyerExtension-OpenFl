@@ -68,7 +68,12 @@ class AppsFlyerExtension {
 
 	}
 
+	#if (android)
+	public static function addConversionListenerCallback(onSuccess:String -> Void, onError:String -> Void):Void {
+	#end
+	#if (ios)
 	public static function addConversionListenerCallback(onSuccess:String -> Void, onError:Void -> Void):Void {
+	#end
 
 		#if (android)
 
