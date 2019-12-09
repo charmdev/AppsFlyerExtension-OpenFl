@@ -180,7 +180,7 @@ public class AppsFlyerExtension extends Extension {
     private static void errorCallback(String errMsg)
     {
         if (AppsFlyerExtension.callbackObj != null)
-            AppsFlyerExtension.callbackObj.call1("onError_jni", errMsg);
+            AppsFlyerExtension.callbackObj.call0("onError_jni");
     }
 
     private static void setInstallData(Map<String, String> conversionData){
