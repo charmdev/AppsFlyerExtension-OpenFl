@@ -3,7 +3,7 @@
 #import <AppsFlyerLib/AppsFlyerTracker.h>
 
 extern "C" void returnConversionSuccess (const char* data);
-extern "C" void returnConversionError (const char* data);
+extern "C" void returnConversionError ();
 
 @interface ConversionListener : NSObject <AppsFlyerTrackerDelegate>
 @end
@@ -52,11 +52,8 @@ static NSString *errorString;
 }
 
 -(void)onConversionDataRequestFailure:(NSError *) error {
-    NSLog(@"%@", error);
-    errorString = [NSString stringWithFormat:@"%@", error];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
-        returnConversionError([errorString UTF8String]);
+        returnConversionError();
     });
 }
 

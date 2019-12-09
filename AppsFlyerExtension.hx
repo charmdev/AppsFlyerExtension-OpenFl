@@ -20,7 +20,7 @@ class AppsFlyerExtension {
 	#end
 	#if (android && openfl)
 		public var onSuccess_jni:String -> Void;
-		public var onError_jni:String -> Void;
+		public var onError_jni:Void -> Void;
 		private static var appsflyerextension_addConversionListenerCallback_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "addConversionListenerCallback", "(Lorg/haxe/lime/HaxeObject;)V");
 		private static var appsflyerextension_trackEvent_jni = JNI.createStaticMethod ("org.haxe.extension.AppsFlyerExtension", "trackEvent", "(Ljava/lang/String;Ljava/lang/String;)V");
 	#end
@@ -68,7 +68,7 @@ class AppsFlyerExtension {
 
 	}
 
-	public static function addConversionListenerCallback(onSuccess:String -> Void, onError:String -> Void):Void {
+	public static function addConversionListenerCallback(onSuccess:String -> Void, onError:Void -> Void):Void {
 
 		#if (android)
 
