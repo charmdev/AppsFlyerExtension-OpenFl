@@ -14,7 +14,7 @@ import openfl.utils.JNI;
 class AppsFlyerExtension {
 
 	#if (ios)
-		private static var appsflyerextension_startTracking = Lib.load ("appsflyerextension", "appsflyerextension_startTracking", 2);
+		private static var appsflyerextension_trackAppLaunch = Lib.load ("appsflyerextension", "appsflyerextension_trackAppLaunch", 0);
 		private static var appsflyerextension_trackEvent = Lib.load ("appsflyerextension", "appsflyerextension_trackEvent", 2);
 		private static var appsflyerextension_addConversionListenerCallback = Lib.load ("appsflyerextension", "appsflyerextension_addConversionListenerCallback", 2);
 	#end
