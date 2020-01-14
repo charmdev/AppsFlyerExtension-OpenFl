@@ -24,12 +24,12 @@ AutoGCRoot* _onError = 0;
 AutoGCRoot* _conversionSuccessResult = 0;
 AutoGCRoot* _conversionErrorResult = 0;
 
-static void appsflyerextension_startTracking (value devkey, value appId) {
+static void appsflyerextension_trackAppLauch () {
 	
-	StartTracking(val_get_string(devkey), val_get_string(appId));
+	TrackAppLaunch();
 	
 }
-DEFINE_PRIM (appsflyerextension_startTracking, 2);
+DEFINE_PRIM (appsflyerextension_trackAppLauch, 0);
 
 static void appsflyerextension_trackEvent (value eventName, value eventData) {
 
