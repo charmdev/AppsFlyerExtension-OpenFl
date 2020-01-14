@@ -54,146 +54,146 @@ import org.json.JSONObject;
 */
 public class AppsFlyerExtension extends Extension {
 
-    private static AppsFlyerExtension instance = null;
+	private static AppsFlyerExtension instance = null;
 	
-    private static String LOG_TAG = "AppsFlyer";
+	private static String LOG_TAG = "AppsFlyer";
 
-    public static String devKey = null;
-    public static String installConversionData = null;
-    public static String conversionError = null;
-    public static int sessionCount = 0;
-    public static HaxeObject callbackObj = null;
+	public static String devKey = null;
+	public static String installConversionData = null;
+	public static String conversionError = null;
+	public static int sessionCount = 0;
+	public static HaxeObject callbackObj = null;
 
-    public AppsFlyerExtension()
-    {
-        if (instance != null)
-            instance = this;
-    }
+	public AppsFlyerExtension()
+	{
+		if (instance != null)
+			instance = this;
+	}
 
-    public static AppsFlyerExtension getInstance() {
-        if (instance == null) {
-            instance = new AppsFlyerExtension();
-        }
+	public static AppsFlyerExtension getInstance() {
+		if (instance == null) {
+			instance = new AppsFlyerExtension();
+		}
 
-        return instance;
-    }
+		return instance;
+	}
 
-    public static void addConversionListenerCallback(HaxeObject callbackObj) {
+	public static void addConversionListenerCallback(HaxeObject callbackObj) {
 
-        AppsFlyerExtension.callbackObj = callbackObj;
+		AppsFlyerExtension.callbackObj = callbackObj;
 
-        if (AppsFlyerExtension.installConversionData != null)
-            successCallback(AppsFlyerExtension.installConversionData);
+		if (AppsFlyerExtension.installConversionData != null)
+			successCallback(AppsFlyerExtension.installConversionData);
 
-        if (AppsFlyerExtension.conversionError != null)
-            errorCallback(AppsFlyerExtension.conversionError);
-    }
+		if (AppsFlyerExtension.conversionError != null)
+			errorCallback(AppsFlyerExtension.conversionError);
+	}
 
-    private void startTracking (String devKey) {
-        AppsFlyerExtension.devKey = devKey;
+	private void startTracking (String devKey) {
+		AppsFlyerExtension.devKey = devKey;
 
-        Log.v(LOG_TAG, "startTracking with id: " + devKey);
+		Log.v(LOG_TAG, "startTracking with id: " + devKey);
 
-        final AppsFlyerConversionListener convListener = new AppsFlyerConversionListener() {
-            /* Returns the attribution data. Note - the same conversion data is returned every time per install */
-            @Override
-            public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
-                for (String attrName : conversionData.keySet()) {
-                    Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
-                }
-                setInstallData(conversionData);
-            }
+		final AppsFlyerConversionListener convListener = new AppsFlyerConversionListener() {
+			/* Returns the attribution data. Note - the same conversion data is returned every time per install */
+			@Override
+			public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
+				for (String attrName : conversionData.keySet()) {
+					Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+				}
+				setInstallData(conversionData);
+			}
 
-            @Override
-            public void onInstallConversionFailure(String errorMessage) {
-                Log.d(LOG_TAG, "error getting conversion data: " + errorMessage);
-                conversionError = "error getting conversion data: " + errorMessage;
-                errorCallback(conversionError);
-            }
+			@Override
+			public void onInstallConversionFailure(String errorMessage) {
+				Log.d(LOG_TAG, "error getting conversion data: " + errorMessage);
+				conversionError = "error getting conversion data: " + errorMessage;
+				errorCallback(conversionError);
+			}
 
-            /* Called only when a Deep Link is opened */
-            @Override
-            public void onAppOpenAttribution(Map<String, String> conversionData) {
-                for (String attrName : conversionData.keySet()) {
-                    Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
-                }
-            }
+			/* Called only when a Deep Link is opened */
+			@Override
+			public void onAppOpenAttribution(Map<String, String> conversionData) {
+				for (String attrName : conversionData.keySet()) {
+					Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
+				}
+			}
 
-            @Override
-            public void onAttributionFailure(String errorMessage) {
-                Log.d(LOG_TAG, "error onAttributionFailure : " + errorMessage);
-            }
-        };
-	    
-	final AppsFlyerTrackingRequestListener requestListener = new AppsFlyerTrackingRequestListener() {
-                @Override
-                public void onTrackingRequestSuccess() {
-                    Log.d(LOG_TAG,"Request to server successfully sent");
-                }
+			@Override
+			public void onAttributionFailure(String errorMessage) {
+				Log.d(LOG_TAG, "error onAttributionFailure : " + errorMessage);
+			}
+		};
+		
+		final AppsFlyerTrackingRequestListener requestListener = new AppsFlyerTrackingRequestListener() {
+			@Override
+			public void onTrackingRequestSuccess() {
+				Log.d(LOG_TAG,"Request to server successfully sent");
+			}
 
-                @Override
-                public void onTrackingRequestFailure(String s) {
-                    Log.d(LOG_TAG,"Error sending request to server: "+s);
-		    conversionError = "Error sending request to server: "+s;
-		    errorCallback(conversionError);
-                }
-            };    
+			@Override
+			public void onTrackingRequestFailure(String s) {
+				Log.d(LOG_TAG,"Error sending request to server: "+s);
+				conversionError = "Error sending request to server: "+s;
+				errorCallback(conversionError);
+			}
+		};
 
-        AppsFlyerLib.getInstance().init(
-                devKey,
-                convListener,
-                Extension.mainContext
-        );
+		AppsFlyerLib.getInstance().init(
+				devKey,
+				convListener,
+				Extension.mainContext
+		);
 
-        AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication(), devKey, requestListener);
+		AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication());
 
-    }
+	}
 
-    public static void trackEvent (String eventName, String eventData) {
+	public static void trackEvent (String eventName, String eventData) {
 
-        Log.v(LOG_TAG, "Trying to send. trackEvent: " + eventName + ", data: " + eventData);
-        Map<String, Object> eventValue = new HashMap<String, Object>();
-        if (eventData != null) {
-            try {
-                JSONObject jObject = new JSONObject(eventData);
+		Log.v(LOG_TAG, "Trying to send. trackEvent: " + eventName + ", data: " + eventData);
+		Map<String, Object> eventValue = new HashMap<String, Object>();
+		if (eventData != null) {
+			try {
+				JSONObject jObject = new JSONObject(eventData);
 
-                Iterator<String> keys = jObject.keys();
+				Iterator<String> keys = jObject.keys();
 
-                while (keys.hasNext()) {
-                    String key = (String) keys.next();
-                    eventValue.put(key,jObject.get(key));
-                }
-                AppsFlyerLib.getInstance().trackEvent(Extension.mainContext, eventName, eventValue);
-                Log.v(LOG_TAG, "Success!");
-            } catch (final JSONException e) {
-                Log.e(LOG_TAG, "Json parsing error: " + e.getMessage());
-            }
-        }
-    }
+				while (keys.hasNext()) {
+					String key = (String) keys.next();
+					eventValue.put(key,jObject.get(key));
+				}
+				AppsFlyerLib.getInstance().trackEvent(Extension.mainContext, eventName, eventValue);
+				Log.v(LOG_TAG, "Success!");
+			} catch (final JSONException e) {
+				Log.e(LOG_TAG, "Json parsing error: " + e.getMessage());
+			}
+		}
+	}
 
-    private static void successCallback(String response)
-    {
-        if (AppsFlyerExtension.callbackObj != null)
-            AppsFlyerExtension.callbackObj.call1("onSuccess_jni", response);
-    }
+	private static void successCallback(String response)
+	{
+		if (AppsFlyerExtension.callbackObj != null)
+			AppsFlyerExtension.callbackObj.call1("onSuccess_jni", response);
+	}
 
-    private static void errorCallback(String errMsg)
-    {
-        if (AppsFlyerExtension.callbackObj != null)
-            AppsFlyerExtension.callbackObj.call0("onError_jni");
-    }
+	private static void errorCallback(String errMsg)
+	{
+		if (AppsFlyerExtension.callbackObj != null)
+			AppsFlyerExtension.callbackObj.call0("onError_jni");
+	}
 
-    private static void setInstallData(Map<String, String> conversionData){
-        if(sessionCount == 0)
-        {
-            installConversionData = Joiner.on("&").withKeyValueSeparator("=").join(conversionData);
+	private static void setInstallData(Map<String, String> conversionData){
+		if(sessionCount == 0)
+		{
+			installConversionData = Joiner.on("&").withKeyValueSeparator("=").join(conversionData);
 
-            Log.v(LOG_TAG, "ad campaign info: " + installConversionData);
-            successCallback(installConversionData);
-            sessionCount++;
-        }
+			Log.v(LOG_TAG, "ad campaign info: " + installConversionData);
+			successCallback(installConversionData);
+			sessionCount++;
+		}
 
-    }
+	}
 	
 	/**
 	 * Called when an activity you launched exits, giving you the requestCode 
@@ -206,11 +206,11 @@ public class AppsFlyerExtension extends Extension {
 		
 	}
 
-    public String getString(int resId)
-    {
-        Context ctx = mainActivity;
-        return ctx.getString(resId);
-    }
+	public String getString(int resId)
+	{
+		Context ctx = mainActivity;
+		return ctx.getString(resId);
+	}
 	
 	
 	/**
@@ -218,7 +218,7 @@ public class AppsFlyerExtension extends Extension {
 	 */
 	public void onCreate (Bundle savedInstanceState) {
 		Log.v(LOG_TAG, "activity onCreate");
-        startTracking(getString(org.haxe.extension.appsflyerextension.R.string.af_dev_key));
+		startTracking(getString(org.haxe.extension.appsflyerextension.R.string.af_dev_key));
 	}
 	
 	

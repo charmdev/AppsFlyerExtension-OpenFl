@@ -40,15 +40,10 @@ class AppsFlyerExtension {
 		return instance;
 	}
 	
-	public static function startTracking (devKey:String, appId:String = ""):Void {
-
-		trace("AppsFlyerReferrerDetectStep startTracking");
+	public static function trackAppLaunch():Void {
 		#if (ios)
-
-			appsflyerextension_startTracking(devKey, appId);
-
+			appsflyerextension_trackAppLaunch();
 		#end
-		
 	}
 
 	public static function trackEvent (eventName:String, eventData:String):Void {

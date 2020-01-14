@@ -2,7 +2,7 @@
 
 namespace appsflyerextension 
 {
-	void StartTracking(std::string devkey, std::string appId)
+	void TrackAppLaunch()
 	{
 		
 	}

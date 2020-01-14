@@ -72,30 +72,11 @@ namespace appsflyerextension {
         NSLog(@"appsflyerextension Init");
     }
     
-    void StartTracking(std::string devkey, std::string appId) {
-        NSLog(@"appsflyerextension StartTracking1");
+    void TrackAppLaunch() {
+        NSLog(@"appsflyerextension TrackAppLaunch");
         [[AppsFlyerTracker sharedTracker] trackAppLaunch];
-
-        /*WithCompletionHandler:^(NSDictionary<NSString *,id> *dictionary, NSError *error) {
-            NSLog(@"appsflyerextension callback!!!");
-            
-            if (error) {
-                errorString = [NSString stringWithFormat:@"%@", error];
-                if ([NSThread isMainThread]){
-                    returnConversionError([errorString UTF8String]);
-                } else {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        returnConversionError([errorString UTF8String]);
-                    });
-                }
-            }
-            if (dictionary) {
-                NSLog(@"%@", dictionary);
-                //onConversionDataReceived(dictionary);
-            }
-        }];
-        */
     }
+
     void TrackEvent(std::string eventName, std::string eventData) {
         NSLog(@"appsflyerextension TrackEvent");
         NSString* eName = [[NSString alloc] initWithUTF8String:eventName.c_str()];

@@ -1,18 +1,11 @@
 <xml>
 	<include name="${HXCPP}/build-tool/BuildCommon.xml"/>
 
-	<files id="common">
-		<compilerflag value="-Iinclude"/>
-		<file name="common/ExternalInterface.cpp"/>
-	</files>
 	<files id="iphone">
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-F../dependencies/ios/" />
+		<file name="common/ExternalInterface.cpp"/>
 		<file name="src/AppsFlyerAppDelegate.mm"/>
-	</files>
-	<files id="android">
-		<compilerflag value="-Iinclude"/>
-		<file name="src/AppsFlyerExtension.cpp"/>
 	</files>
 	
 	<set name="SLIBEXT" value=".lib" if="windows"/>
