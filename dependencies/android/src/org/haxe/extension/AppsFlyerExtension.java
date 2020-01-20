@@ -97,7 +97,7 @@ public class AppsFlyerExtension extends Extension {
 		final AppsFlyerConversionListener convListener = new AppsFlyerConversionListener() {
 			/* Returns the attribution data. Note - the same conversion data is returned every time per install */
 			@Override
-			public void onConversionDataSuccess(Map<String, String> conversionData) {
+			public void onConversionDataSuccess(Map<String, Object> conversionData) {
 				for (String attrName : conversionData.keySet()) {
 					Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
 				}
@@ -183,7 +183,7 @@ public class AppsFlyerExtension extends Extension {
 			AppsFlyerExtension.callbackObj.call0("onError_jni");
 	}
 
-	private static void setInstallData(Map<String, String> conversionData){
+	private static void setInstallData(Map<String, Object> conversionData){
 		if(sessionCount == 0)
 		{
 			installConversionData = Joiner.on("&").withKeyValueSeparator("=").join(conversionData);
