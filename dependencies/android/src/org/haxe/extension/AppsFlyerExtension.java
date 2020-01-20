@@ -97,7 +97,7 @@ public class AppsFlyerExtension extends Extension {
 		final AppsFlyerConversionListener convListener = new AppsFlyerConversionListener() {
 			/* Returns the attribution data. Note - the same conversion data is returned every time per install */
 			@Override
-			public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
+			public void onConversionDataSuccess(Map<String, String> conversionData) {
 				for (String attrName : conversionData.keySet()) {
 					Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
 				}
@@ -105,7 +105,7 @@ public class AppsFlyerExtension extends Extension {
 			}
 
 			@Override
-			public void onInstallConversionFailure(String errorMessage) {
+			public void onConversionDataFail(String errorMessage) {
 				Log.d(LOG_TAG, "error getting conversion data: " + errorMessage);
 				conversionError = "error getting conversion data: " + errorMessage;
 				errorCallback(conversionError);
