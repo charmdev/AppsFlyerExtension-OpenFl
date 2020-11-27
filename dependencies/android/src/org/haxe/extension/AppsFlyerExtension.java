@@ -171,16 +171,30 @@ public class AppsFlyerExtension extends Extension {
 		}
 	}
 
-	private static void successCallback(String response)
+	private static void successCallback(final String response)
 	{
-		if (AppsFlyerExtension.callbackObj != null)
-			AppsFlyerExtension.callbackObj.call1("onSuccess_jni", response);
+		Extension.sendHaxe(
+			new Runnable() {
+				@Override
+				public void run() {
+					if (AppsFlyerExtension.callbackObj != null)
+						AppsFlyerExtension.callbackObj.call1("onSuccess_jni", response);
+				}
+			}
+		);
 	}
 
 	private static void errorCallback(String errMsg)
 	{
-		if (AppsFlyerExtension.callbackObj != null)
-			AppsFlyerExtension.callbackObj.call0("onError_jni");
+		Extension.sendHaxe(
+			new Runnable() {
+				@Override
+				public void run() {
+					if (AppsFlyerExtension.callbackObj != null)
+						AppsFlyerExtension.callbackObj.call0("onError_jni");
+				}
+			}
+		);
 	}
 
 	private static void setInstallData(Map<String, String> conversionData){
