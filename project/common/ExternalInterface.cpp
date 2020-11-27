@@ -53,6 +53,12 @@ static void appsflyerextension_addConversionListenerCallback(value onSuccess, va
     
 }
 DEFINE_PRIM (appsflyerextension_addConversionListenerCallback, 2);
+
+static void appsflyerextension_removeConversionListenerCallback() {
+    _onSuccess = 0;
+    _onError = 0;
+}
+DEFINE_PRIM (appsflyerextension_removeConversionListenerCallback, 0);
              
 extern "C" void appsflyerextension_main () {
 	

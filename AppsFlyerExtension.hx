@@ -17,6 +17,7 @@ class AppsFlyerExtension {
 		private static var appsflyerextension_trackAppLaunch = Lib.load ("appsflyerextension", "appsflyerextension_trackAppLaunch", 0);
 		private static var appsflyerextension_trackEvent = Lib.load ("appsflyerextension", "appsflyerextension_trackEvent", 2);
 		private static var appsflyerextension_addConversionListenerCallback = Lib.load ("appsflyerextension", "appsflyerextension_addConversionListenerCallback", 2);
+		private static var appsflyerextension_removeConversionListenerCallback = Lib.load ("appsflyerextension", "appsflyerextension_removeConversionListenerCallback", 0);
 	#end
 	#if (android && openfl)
 		public var onSuccess_jni:String -> Void;
@@ -77,5 +78,14 @@ class AppsFlyerExtension {
 
 		#end
 	}
-	
+
+	public static function removeConversionListenerCallback():Void {
+		#if (android)
+			getInstance().onSuccess_jni = function(_):Void {trace("ignore");}
+			getInstance().onError_jni = function():Void {trace("ignore");}
+		#end
+		#if (ios)
+			appsflyerextension_removeConversionListenerCallback();
+		#end
+	}
 }
