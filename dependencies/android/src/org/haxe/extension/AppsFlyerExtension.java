@@ -12,7 +12,8 @@ import android.util.Log;
 import com.google.common.base.Joiner;
 import com.appsflyer.AppsFlyerLib;
 import com.appsflyer.AppsFlyerConversionListener;
-import com.appsflyer.AppsFlyerTrackingRequestListener;
+import com.appsflyer.attribution.AppsFlyerRequestListener;
+
 import android.app.Application;
 import java.util.*;
 import java.lang.Runnable;
@@ -25,37 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-
-/* 
-	You can use the Android Extension class in order to hook
-	into the Android activity lifecycle. This is not required
-	for standard Java code, this is designed for when you need
-	deeper integration.
-	
-	You can access additional references from the Extension class,
-	depending on your needs:
-	
-	- Extension.assetManager (android.content.res.AssetManager)
-	- Extension.callbackHandler (android.os.Handler)
-	- Extension.mainActivity (android.app.Activity)
-	- Extension.mainContext (android.content.Context)
-	- Extension.mainView (android.view.View)
-	
-	You can also make references to static or instance methods
-	and properties on Java classes. These classes can be included 
-	as single files using <java path="to/File.java" /> within your
-	project, or use the full Android Library Project format (such
-	as this example) in order to include your own AndroidManifest
-	data, additional dependencies, etc.
-	
-	These are also optional, though this example shows a static
-	function for performing a single task, like returning a value
-	back to Haxe from Java.
-*/
 public class AppsFlyerExtension extends Extension {
 
 	private static AppsFlyerExtension instance = null;
-	
+
 	private static String LOG_TAG = "AppsFlyer";
 
 	public static String devKey = null;
@@ -74,7 +48,6 @@ public class AppsFlyerExtension extends Extension {
 		if (instance == null) {
 			instance = new AppsFlyerExtension();
 		}
-
 		return instance;
 	}
 
@@ -89,15 +62,16 @@ public class AppsFlyerExtension extends Extension {
 			errorCallback(AppsFlyerExtension.conversionError);
 	}
 
-	private void startTracking (String devKey) {
+	static void startTracking (String devKey) {
 		AppsFlyerExtension.devKey = devKey;
 
 		Log.v(LOG_TAG, "startTracking with id: " + devKey);
 
 		final AppsFlyerConversionListener convListener = new AppsFlyerConversionListener() {
-			/* Returns the attribution data. Note - the same conversion data is returned every time per install */
+			
 			@Override
-			public void onInstallConversionDataLoaded(Map<String, String> conversionData) {
+			public void onConversionDataSuccess(Map<String,Object> conversionData) {
+				Log.d(LOG_TAG, "Success onConversionDataSuccess");
 				for (String attrName : conversionData.keySet()) {
 					Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
 				}
@@ -105,13 +79,12 @@ public class AppsFlyerExtension extends Extension {
 			}
 
 			@Override
-			public void onInstallConversionFailure(String errorMessage) {
-				Log.d(LOG_TAG, "error getting conversion data: " + errorMessage);
+			public void onConversionDataFail(String errorMessage) {
+				Log.d(LOG_TAG, "Error onConversionDataFail: " + errorMessage);
 				conversionError = "error getting conversion data: " + errorMessage;
 				errorCallback(conversionError);
 			}
 
-			/* Called only when a Deep Link is opened */
 			@Override
 			public void onAppOpenAttribution(Map<String, String> conversionData) {
 				for (String attrName : conversionData.keySet()) {
@@ -124,29 +97,28 @@ public class AppsFlyerExtension extends Extension {
 				Log.d(LOG_TAG, "error onAttributionFailure : " + errorMessage);
 			}
 		};
-		
-		final AppsFlyerTrackingRequestListener requestListener = new AppsFlyerTrackingRequestListener() {
+
+		final AppsFlyerRequestListener requestListener = new AppsFlyerRequestListener() {
 			@Override
-			public void onTrackingRequestSuccess() {
+			public void onSuccess() {
 				Log.d(LOG_TAG,"Request to server successfully sent");
 			}
 
 			@Override
-			public void onTrackingRequestFailure(String s) {
-				Log.d(LOG_TAG,"Error sending request to server: "+s);
-				conversionError = "Error sending request to server: "+s;
+			public void onError(int code, String error) {
+				Log.d(LOG_TAG,"Error sending request to server: "+error);
+				conversionError = "Error sending request to server: "+error;
 				errorCallback(conversionError);
 			}
 		};
 
 		AppsFlyerLib.getInstance().init(
-				devKey,
-				convListener,
-				Extension.mainContext
+			devKey,
+			convListener,
+			Extension.mainContext
 		);
 
-		AppsFlyerLib.getInstance().startTracking(Extension.mainActivity.getApplication());
-
+		AppsFlyerLib.getInstance().start(Extension.mainActivity.getApplication(), devKey, requestListener);
 	}
 
 	public static void trackEvent (String eventName, String eventData) {
@@ -163,7 +135,7 @@ public class AppsFlyerExtension extends Extension {
 					String key = (String) keys.next();
 					eventValue.put(key,jObject.get(key));
 				}
-				AppsFlyerLib.getInstance().trackEvent(Extension.mainContext, eventName, eventValue);
+				AppsFlyerLib.getInstance().logEvent(Extension.mainContext, eventName, eventValue);
 				Log.v(LOG_TAG, "Success!");
 			} catch (final JSONException e) {
 				Log.e(LOG_TAG, "Json parsing error: " + e.getMessage());
@@ -171,34 +143,18 @@ public class AppsFlyerExtension extends Extension {
 		}
 	}
 
-	private static void successCallback(final String response)
-	{
-		Extension.sendHaxe(
-			new Runnable() {
-				@Override
-				public void run() {
-					if (AppsFlyerExtension.callbackObj != null)
-						AppsFlyerExtension.callbackObj.call1("onSuccess_jni", response);
-				}
-			}
-		);
+	private static void successCallback(String response) {
+		if (AppsFlyerExtension.callbackObj != null)
+			AppsFlyerExtension.callbackObj.call1("onSuccess_jni", response);
 	}
 
-	private static void errorCallback(String errMsg)
-	{
-		Extension.sendHaxe(
-			new Runnable() {
-				@Override
-				public void run() {
-					if (AppsFlyerExtension.callbackObj != null)
-						AppsFlyerExtension.callbackObj.call0("onError_jni");
-				}
-			}
-		);
+	private static void errorCallback(String errMsg) {
+		if (AppsFlyerExtension.callbackObj != null)
+			AppsFlyerExtension.callbackObj.call0("onError_jni");
 	}
 
-	private static void setInstallData(Map<String, String> conversionData){
-		if(sessionCount == 0)
+	private static void setInstallData(Map<String, Object> conversionData) {
+		if (sessionCount == 0)
 		{
 			installConversionData = Joiner.on("&").withKeyValueSeparator("=").join(conversionData);
 
@@ -206,100 +162,44 @@ public class AppsFlyerExtension extends Extension {
 			successCallback(installConversionData);
 			sessionCount++;
 		}
-
 	}
 	
-	/**
-	 * Called when an activity you launched exits, giving you the requestCode 
-	 * you started it with, the resultCode it returned, and any additional data 
-	 * from it.
-	 */
 	public boolean onActivityResult (int requestCode, int resultCode, Intent data) {
-		
 		return true;
-		
 	}
 
-	public String getString(int resId)
-	{
+	public String getString(int resId) {
 		Context ctx = mainActivity;
 		return ctx.getString(resId);
 	}
 	
 	
-	/**
-	 * Called when the activity is starting.
-	 */
 	public void onCreate (Bundle savedInstanceState) {
-		Log.v(LOG_TAG, "activity onCreate");
 		startTracking(getString(org.haxe.extension.appsflyerextension.R.string.af_dev_key));
 	}
 	
-	
-	/**
-	 * Perform any final cleanup before an activity is destroyed.
-	 */
 	public void onDestroy () {
 		
-		
-		
 	}
 	
-	
-	/**
-	 * Called as part of the activity lifecycle when an activity is going into
-	 * the background, but has not (yet) been killed.
-	 */
 	public void onPause () {
 		
-		
-		
 	}
 	
-	
-	/**
-	 * Called after {@link #onStop} when the current activity is being 
-	 * re-displayed to the user (the user has navigated back to it).
-	 */
 	public void onRestart () {
 		
-		
-		
 	}
 	
-	
-	/**
-	 * Called after {@link #onRestart}, or {@link #onPause}, for your activity 
-	 * to start interacting with the user.
-	 */
 	public void onResume () {
 		
-		
-		
 	}
 	
-	
-	/**
-	 * Called after {@link #onCreate} &mdash; or after {@link #onRestart} when  
-	 * the activity had been stopped, but is now again being displayed to the 
-	 * user.
-	 */
 	public void onStart () {
 		
-		
-		
 	}
 	
-	
-	/**
-	 * Called when the activity is no longer visible to the user, because 
-	 * another activity has been resumed and is covering this one. 
-	 */
 	public void onStop () {
 		
-		
-		
 	}
-	
 	
 }
