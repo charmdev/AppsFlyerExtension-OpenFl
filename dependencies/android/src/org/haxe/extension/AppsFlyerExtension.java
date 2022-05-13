@@ -119,6 +119,8 @@ public class AppsFlyerExtension extends Extension {
 		);
 
 		AppsFlyerLib.getInstance().start(Extension.mainActivity.getApplication(), devKey, requestListener);
+
+		AppsFlyerLib.getInstance().logSession(Extension.mainContext);
 	}
 
 	public static void trackEvent (String eventName, String eventData) {
@@ -191,7 +193,7 @@ public class AppsFlyerExtension extends Extension {
 	}
 	
 	public void onResume () {
-		
+		AppsFlyerLib.getInstance().logSession(Extension.mainContext);
 	}
 	
 	public void onStart () {
