@@ -11,8 +11,8 @@ import android.view.View;
 import android.util.Log;
 import com.google.common.base.Joiner;
 import com.appsflyer.AppsFlyerLib;
-import com.appsflyer.AppsFlyerConversionListener;
-import com.appsflyer.attribution.AppsFlyerRequestListener;
+import com.appsflyer.share.AppsFlyerConversionListener;
+import com.appsflyer.share.attribution.AppsFlyerRequestListener;
 
 import android.app.Application;
 import java.util.*;
@@ -84,18 +84,6 @@ public class AppsFlyerExtension extends Extension {
 				conversionError = "error getting conversion data: " + errorMessage;
 				errorCallback(conversionError);
 			}
-
-			@Override
-			public void onAppOpenAttribution(Map<String, String> conversionData) {
-				for (String attrName : conversionData.keySet()) {
-					Log.d(LOG_TAG, "attribute: " + attrName + " = " + conversionData.get(attrName));
-				}
-			}
-
-			@Override
-			public void onAttributionFailure(String errorMessage) {
-				Log.d(LOG_TAG, "error onAttributionFailure : " + errorMessage);
-			}
 		};
 
 		final AppsFlyerRequestListener requestListener = new AppsFlyerRequestListener() {
@@ -118,7 +106,7 @@ public class AppsFlyerExtension extends Extension {
 			Extension.mainContext
 		);
 
-		AppsFlyerLib.getInstance().start(Extension.mainActivity.getApplication(), devKey, requestListener);
+		AppsFlyerLib.getInstance().start(requestListener);
 
 		AppsFlyerLib.getInstance().logSession(Extension.mainContext);
 	}
